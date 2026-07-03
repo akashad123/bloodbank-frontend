@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { PageHeader } from '../components/UI';
 import api from '../api/axios';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -70,23 +71,17 @@ export default function Chatbot() {
   return (
     <div className="min-h-screen bg-bg flex flex-col">
       
-      {/* Header */}
-      <div className="bg-text-primary text-white px-6 py-4 border-b-4 border-primary">
-        <div className="max-w-3xl mx-auto flex items-center gap-3">
-          <div className="p-2 bg-primary">
-            <Bot size={20} className="text-white" />
-          </div>
-          <div>
-            <p className="font-black text-sm">RedConnect AI</p>
-            <p className="text-xs text-gray-400">Powered by OpenRouter · Blood Donation Assistant</p>
-          </div>
-          <div className="ml-auto">
-            <span className="text-xs bg-green-500/20 text-green-400 border border-green-500/30 px-2 py-0.5 font-medium">
-              ● Online
-            </span>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        eyebrow="AI Assistant"
+        title="RedConnect AI"
+        subtitle="Blood donation assistant · Powered by OpenRouter"
+        maxWidth="max-w-3xl"
+        right={
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 bg-green-50 border border-green-200 text-green-700">
+            <span className="w-1.5 h-1.5 bg-green-500 rounded-full" /> Online
+          </span>
+        }
+      />
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto">

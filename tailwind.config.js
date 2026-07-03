@@ -2,65 +2,57 @@
 export default {
   content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}'],
   theme: {
+    borderRadius: {
+      DEFAULT: '0',
+      none: '0',
+      sm: '0',
+      md: '0',
+      lg: '0',
+      xl: '0',
+      '2xl': '0',
+      '3xl': '0',
+      full: '9999px',
+    },
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#CD0000',
-          light: '#E83333',
-          dark: '#A00000',
-          50: '#FFF0F0',
-          100: '#FFD6D6',
-          200: '#FFAAAA',
-          300: '#FF7070',
-          400: '#E83333',
-          500: '#CD0000',
-          600: '#A00000',
-          700: '#7A0000',
-          800: '#560000',
-          900: '#370000',
+          DEFAULT: '#C8102E', // Primary Red
+          light: '#D50032', // Accent Red
+          dark: '#A00824',
+          50: '#FDF2F3',
+          100: '#F2D7D5', // Soft Pink
+          200: '#EAB8C9', // Light Rose
+          300: '#E099B0',
+          400: '#D87A96',
+          500: '#C8102E',
+          600: '#A00824',
+          700: '#78061B',
+          800: '#500412',
+          900: '#280209',
         },
         bg: {
-          DEFAULT: '#EFEDE6',
-          dark: '#E4E1D9',
-          darker: '#D5D0C5',
+          DEFAULT: '#FFFFFF', // Pure White Main
+          dark: '#F8F9FA',
+          darker: '#E9ECEF',
         },
         surface: {
           DEFAULT: '#FFFFFF',
-          muted: '#F8F7F4',
+          muted: '#F8F9FA',
         },
         text: {
           primary: '#1A1A1A',
-          secondary: '#555555',
-          muted: '#888888',
+          secondary: '#4A5568',
+          muted: '#718096',
         },
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
-      spacing: {
-        1: '4px',
-        2: '8px',
-        3: '12px',
-        4: '16px',
-        6: '24px',
-        8: '32px',
-        12: '48px',
-        16: '64px',
-      },
-      borderRadius: {
-        DEFAULT: '0',
-        none: '0',
-        sm: '0',
-        md: '0',
-        lg: '0',
-        xl: '0',
-        full: '9999px',
-      },
       boxShadow: {
-        sharp: '4px 4px 0px #CD0000',
-        'sharp-sm': '2px 2px 0px #CD0000',
-        'sharp-dark': '4px 4px 0px #1A1A1A',
-        card: '0 2px 8px rgba(0,0,0,0.08)',
+        card: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+        'card-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04)',
+        soft: '0 4px 20px rgba(0,0,0,0.05)',
+        glow: '0 0 15px rgba(200, 16, 46, 0.3)',
       },
       animation: {
         'fade-in': 'fadeIn 0.4s ease-out',

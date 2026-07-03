@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
-import { BloodGroupBadge, UrgencyBadge, StatusBadge, LoadingSpinner, EmptyState } from '../components/UI';
+import { BloodGroupBadge, UrgencyBadge, StatusBadge, LoadingSpinner, EmptyState, PageHeader } from '../components/UI';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
@@ -40,24 +40,17 @@ export default function RequestList() {
   useEffect(() => { fetchRequests(); }, [filters, page]);
 
   return (
-    <div className="min-h-screen bg-bg">
-      
-      <div className="page-header">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">Blood Requests</p>
-            <h1 className="text-3xl font-black">My Requests</h1>
-            <p className="text-gray-400 text-sm">All your created requests</p>
-          </div>
-          <Link to="/requests/new" className="btn-primary flex items-center gap-2">
-            <Plus size={16} /> New Request
-          </Link>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gray-50/50">
+      <PageHeader
+        eyebrow="Blood Requests"
+        title="My Requests"
+        subtitle="All your created blood requests"
+        right={<Link to="/requests/new" className="btn-primary flex items-center gap-2 text-xs px-4 py-2.5"><Plus size={14} /> New Request</Link>}
+      />
 
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="max-w-7xl mx-auto px-6 pt-6 pb-6">
         {/* Filters */}
-        <div className="card mb-6 flex flex-wrap gap-4 items-end">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 flex flex-wrap gap-4 items-end">
           <div className="flex-1 min-w-48">
             <label className="label">Blood Group</label>
             <select value={filters.bloodGroup} onChange={(e) => setFilters({ ...filters, bloodGroup: e.target.value })} className="select">
@@ -73,7 +66,7 @@ export default function RequestList() {
               <option value="normal">Normal</option>
             </select>
           </div>
-          <button onClick={() => setFilters({ bloodGroup: '', urgency: '' })} className="btn-ghost border border-bg-darker px-4 py-3">
+          <button onClick={() => setFilters({ bloodGroup: '', urgency: '' })} className="btn-ghost border border-gray-200 px-6 py-3 rounded-xl">
             Clear
           </button>
         </div>
@@ -93,18 +86,18 @@ export default function RequestList() {
                   key={req._id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className={`card w-full overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-3 cursor-pointer hover:border-primary transition-colors ${req.urgency === 'emergency' ? 'border-l-4 border-l-red-600' : ''}`}
+                  className={`card w-full overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-3 cursor-pointer hover:-translate-y-1 hover:shadow-card-hover hover:border-primary-100 transition-all duration-300 ${req.urgency === 'emergency' ? 'border-l-4 border-l-primary' : ''}`}
                   onClick={() => navigate(`/requests/${req._id}`)}
                 >
                   <div className="flex items-start gap-3 flex-1 min-w-0 w-full">
                     <BloodGroupBadge group={req.bloodGroup} size="md" />
                     <div className="flex-1 min-w-0 flex flex-col gap-1">
-                      <p className="font-bold text-sm md:text-base break-words">{req.hospital}</p>
+                      <p className="font-black text-sm md:text-base break-words text-text-primary">{req.hospital}</p>
                       <div className="flex flex-wrap gap-2 mb-1">
                         <UrgencyBadge urgency={req.urgency} />
                         <StatusBadge status={req.status} />
                       </div>
-                      <p className="text-xs text-gray-500">{req.district}</p>
+                      <p className="text-xs font-bold text-text-secondary">{req.district}</p>
                       <p className="text-xs text-text-muted whitespace-nowrap overflow-hidden text-ellipsis">
                         {req.units} unit(s) needed &bull; {timeAgo(req.createdAt)}
                       </p>
@@ -120,9 +113,9 @@ export default function RequestList() {
             {/* Pagination */}
             {pages > 1 && (
               <div className="flex items-center justify-center gap-2 mt-8">
-                <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="btn-ghost border border-bg-darker disabled:opacity-40 px-4 py-2">← Prev</button>
-                <span className="text-sm text-text-muted px-4">{page} / {pages}</span>
-                <button onClick={() => setPage((p) => Math.min(pages, p + 1))} disabled={page === pages} className="btn-ghost border border-bg-darker disabled:opacity-40 px-4 py-2">Next →</button>
+                <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="btn-ghost bg-white shadow-sm border border-gray-100 rounded-xl disabled:opacity-40 px-4 py-2">← Prev</button>
+                <span className="text-sm font-bold text-text-secondary px-4">{page} / {pages}</span>
+                <button onClick={() => setPage((p) => Math.min(pages, p + 1))} disabled={page === pages} className="btn-ghost bg-white shadow-sm border border-gray-100 rounded-xl disabled:opacity-40 px-4 py-2">Next →</button>
               </div>
             )}
           </>

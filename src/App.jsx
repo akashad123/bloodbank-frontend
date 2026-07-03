@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
 import { NotificationProvider } from './contexts/NotificationContext';
-import { ProtectedRoute, AdminRoute, PublicRoute } from './components/ProtectedRoute';
+import { ProtectedRoute, AdminRoute, PublicRoute, DonorRoute, RequesterRoute } from './components/ProtectedRoute';
 import Layout from './components/Layout';
 
 // Pages
@@ -17,9 +17,11 @@ import EditRequest from './pages/EditRequest';
 import RequestDetail from './pages/RequestDetail';
 import Notifications from './pages/Notifications';
 import Chatbot from './pages/Chatbot';
+import Certificates from './pages/Certificates';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminRequests from './pages/AdminRequests';
 import AdminUsers from './pages/AdminUsers';
+import AdminHospitals from './pages/AdminHospitals';
 
 function AppRoutes() {
   return (
@@ -36,12 +38,24 @@ function AppRoutes() {
         <Route element={<Layout />}>
           <Route path="/dashboard"      element={<UserDashboard />} />
           <Route path="/profile"        element={<Profile />} />
-          <Route path="/requests"       element={<RequestList />} />
-          <Route path="/requests/new"   element={<CreateRequest />} />
-          <Route path="/requests/:id/edit" element={<EditRequest />} />
-          <Route path="/requests/:id"   element={<RequestDetail />} />
           <Route path="/notifications"  element={<Notifications />} />
-          <Route path="/chatbot"        element={<Chatbot />} />
+          
+          {/* Shared Request Detail (Donors view assigned donations, Requesters view created requests) */}
+          <Route path="/requests/:id"   element={<RequestDetail />} />
+
+          {/* Requester Only Routes */}
+          <Route element={<RequesterRoute />}>
+            <Route path="/requests"       element={<RequestList />} />
+            <Route path="/requests/new"   element={<CreateRequest />} />
+            <Route path="/create-request" element={<Navigate to="/requests/new" replace />} />
+            <Route path="/requests/:id/edit" element={<EditRequest />} />
+          </Route>
+          
+          {/* Donor Only Routes */}
+          <Route element={<DonorRoute />}>
+            <Route path="/chatbot"        element={<Chatbot />} />
+            <Route path="/certificates"   element={<Certificates />} />
+          </Route>
         </Route>
       </Route>
 
@@ -51,6 +65,7 @@ function AppRoutes() {
           <Route path="/admin"          element={<AdminDashboard />} />
           <Route path="/admin/requests" element={<AdminRequests />} />
           <Route path="/admin/users"    element={<AdminUsers />} />
+          <Route path="/admin/hospitals" element={<AdminHospitals />} />
         </Route>
       </Route>
 
@@ -72,16 +87,18 @@ export default function App() {
               duration: 3500,
               style: {
                 borderRadius: '0',
-                border: '2px solid #EFEDE6',
+                border: '1px solid #E9ECEF',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
                 fontFamily: 'Inter, sans-serif',
                 fontSize: '14px',
                 fontWeight: '500',
+                color: '#1A1A1A',
               },
               success: {
                 style: { borderLeft: '4px solid #22c55e' },
               },
               error: {
-                style: { borderLeft: '4px solid #CD0000' },
+                style: { borderLeft: '4px solid #C8102E' },
               },
             }}
           />

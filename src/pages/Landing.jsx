@@ -15,21 +15,24 @@ const fadeUp = { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0 } };
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-bg">
+    <div className="min-h-screen bg-white">
       {/* Top Bar */}
-      <nav className="bg-text-primary text-white px-6 py-4 flex items-center justify-between border-b-4 border-primary">
-        <div className="flex items-center gap-2 font-black text-xl tracking-tight">
-          <Droplets size={28} className="text-primary" fill="currentColor" />
-          RED<span className="text-primary">CONNECT</span>
+      <nav className="bg-white/90 backdrop-blur-md text-text-primary px-6 py-4 flex items-center justify-between border-b border-gray-100 shadow-sm sticky top-0 z-50">
+        <div className="flex items-center gap-1.5 sm:gap-2 font-black text-lg sm:text-xl tracking-tight shrink-0">
+          <Droplets size={28} className="text-primary shrink-0" fill="currentColor" />
+          <span className="flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
+            <span>RED<span className="text-primary">CONNECT</span></span>
+            <span className="text-[9px] sm:text-[11px] font-bold text-gray-400 tracking-widest border-l-2 border-primary/50 pl-1.5 sm:pl-2">DYFI MOKERI EAST</span>
+          </span>
         </div>
         <div className="flex items-center gap-3">
-          <Link to="/login" className="btn-ghost text-white hover:bg-white/10 text-sm px-4 py-2 font-medium">Login</Link>
-          <Link to="/register" className="btn-primary py-2 text-xs">Register</Link>
+          <Link to="/login" className="btn-ghost text-text-secondary hover:text-primary text-sm px-4 py-2 font-bold rounded-xl">Login</Link>
+          <Link to="/register" className="btn-primary py-2 text-xs rounded-xl shadow-sm">Register</Link>
         </div>
       </nav>
 
       {/* Hero */}
-      <section className="bg-text-primary text-white">
+      <section className="bg-gradient-to-b from-white via-primary-50/30 to-white text-text-primary">
         <div className="max-w-7xl mx-auto px-6 py-20 md:py-32">
           <motion.div
             variants={fadeUp}
@@ -38,9 +41,9 @@ export default function Landing() {
             transition={{ duration: 0.6 }}
             className="max-w-3xl"
           >
-            <div className="inline-flex items-center gap-2 bg-primary/20 border border-primary/40 px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-light mb-6">
-              <span className="w-2 h-2 bg-primary animate-pulse" style={{ borderRadius: '50%' }} />
-              Kerala Blood Donation Network
+            <div className="inline-flex items-center gap-2 bg-primary-50 border border-primary-100 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest text-primary mb-6 shadow-sm">
+              <span className="w-2 h-2 bg-primary animate-pulse rounded-full" />
+              DYFI MOKERI EAST MC
             </div>
 
             <h1 className="text-5xl md:text-7xl font-black leading-none mb-6">
@@ -49,16 +52,16 @@ export default function Landing() {
               MOST.
             </h1>
 
-            <p className="text-gray-300 text-lg max-w-xl mb-10">
+            <p className="text-text-secondary text-lg max-w-xl mb-10">
               Connecting blood donors with patients across Kerala's 14 districts in real-time. 
               Fast. Verified. Life-saving.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/register" className="btn-primary text-base px-8 py-4">
+              <Link to="/register" className="btn-primary text-base px-8 py-4 shadow-md">
                 Register as Donor
               </Link>
-              <Link to="/register" className="btn-outline border-white text-white hover:bg-white hover:text-text-primary text-base px-8 py-4">
+              <Link to="/register" className="btn-outline text-base px-8 py-4">
                 Request Blood
               </Link>
             </div>
@@ -67,17 +70,17 @@ export default function Landing() {
       </section>
 
       {/* Blood Group Ticker */}
-      <div className="bg-primary py-3 overflow-hidden">
+      <div className="bg-primary py-3 overflow-hidden shadow-sm">
         <div className="flex gap-8 animate-marquee whitespace-nowrap">
           {[...bloodGroups, ...bloodGroups].map((bg, i) => (
-            <span key={i} className="text-white font-black text-2xl mx-4">{bg}</span>
+            <span key={i} className="text-white font-black text-2xl mx-4 opacity-90">{bg}</span>
           ))}
         </div>
       </div>
 
       {/* Stats Bar */}
-      <div className="bg-bg-dark border-b-2 border-bg-darker">
-        <div className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+      <div className="bg-white border-b border-gray-100 shadow-sm relative z-10 -mt-1 rounded-b-3xl">
+        <div className="max-w-7xl mx-auto px-6 py-10 grid grid-cols-2 md:grid-cols-4 gap-8">
           {[
             { value: '14', label: 'Districts Covered' },
             { value: '8', label: 'Blood Groups' },
@@ -93,8 +96,8 @@ export default function Landing() {
               transition={{ delay: i * 0.1 }}
               className="text-center"
             >
-              <div className="text-4xl font-black text-primary">{stat.value}</div>
-              <div className="text-sm text-text-muted mt-1 font-medium">{stat.label}</div>
+              <div className="text-4xl font-black text-primary mb-1">{stat.value}</div>
+              <div className="text-sm text-text-secondary font-semibold">{stat.label}</div>
             </motion.div>
           ))}
         </div>
@@ -116,38 +119,45 @@ export default function Landing() {
               whileInView="show"
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="card border-t-4 border-t-primary hover:shadow-sharp transition-all duration-200 group cursor-default"
+              className="bg-white border border-gray-100 p-6 shadow-sm hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300 group cursor-default"
             >
-              <div className="p-3 bg-primary/10 inline-flex mb-4 group-hover:bg-primary/20 transition-colors">
-                <f.icon size={22} className="text-primary" />
+              <div className="p-3 bg-primary-50 inline-flex mb-4 group-hover:bg-primary group-hover:text-white rounded-xl transition-colors duration-300">
+                <f.icon size={24} className="text-primary group-hover:text-white transition-colors" />
               </div>
-              <h3 className="font-bold text-base mb-2">{f.title}</h3>
-              <p className="text-sm text-text-muted">{f.desc}</p>
+              <h3 className="font-bold text-lg mb-2 text-text-primary">{f.title}</h3>
+              <p className="text-sm text-text-secondary leading-relaxed">{f.desc}</p>
             </motion.div>
           ))}
         </div>
       </section>
 
       {/* CTA */}
-      <section className="bg-primary text-white">
-        <div className="max-w-7xl mx-auto px-6 py-16 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div>
-            <h2 className="text-3xl font-black mb-2">Ready to save a life?</h2>
-            <p className="text-red-100">Join thousands of donors across Kerala.</p>
+      <div className="px-6 pb-20">
+        <section className="bg-primary text-white max-w-7xl mx-auto shadow-xl overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-black opacity-10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4"></div>
+          <div className="relative max-w-7xl mx-auto px-8 py-16 md:py-20 flex flex-col md:flex-row items-center justify-between gap-8 z-10">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-black mb-3">Ready to save a life?</h2>
+              <p className="text-primary-100 text-lg">Join thousands of donors across Kerala making an impact.</p>
+            </div>
+            <Link to="/register" className="bg-white text-primary font-bold px-8 py-4 rounded-xl shadow-lg hover:bg-gray-50 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex-shrink-0 text-center w-full md:w-auto">
+              Get Started — It's Free
+            </Link>
           </div>
-          <Link to="/register" className="bg-white text-primary font-black px-8 py-4 text-sm uppercase tracking-wider hover:bg-red-50 transition-colors flex-shrink-0">
-            Get Started — It's Free
-          </Link>
-        </div>
-      </section>
+        </section>
+      </div>
 
       {/* Footer */}
-      <footer className="bg-text-primary text-gray-400 px-6 py-8 text-sm text-center">
-        <div className="flex items-center justify-center gap-2 mb-2 text-white font-black">
-          <Droplets size={18} className="text-primary" fill="currentColor" />
-          REDCONNECT
+      <footer className="bg-gray-50 border-t border-gray-200 text-text-secondary px-6 py-10 text-sm text-center">
+        <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-3 text-text-primary font-black shrink-0">
+          <Droplets size={20} className="text-primary shrink-0" fill="currentColor" />
+          <span className="flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
+            <span>RED<span className="text-primary">CONNECT</span></span>
+            <span className="text-[9px] sm:text-[11px] font-bold text-gray-400 tracking-widest border-l-2 border-primary/50 pl-1.5 sm:pl-2">DYFI MOKERI EAST</span>
+          </span>
         </div>
-        <p>Kerala Blood Donation Platform · All 14 Districts</p>
+        <p className="font-medium text-text-muted">DYFI MOKERI EAST MEGHALA COMMITTEE</p>
       </footer>
 
       <style>{`

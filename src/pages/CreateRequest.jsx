@@ -6,6 +6,8 @@ import api from '../api/axios';
 import toast from 'react-hot-toast';
 import { KERALA_DISTRICTS, BLOOD_GROUPS } from '../utils/constants';
 import { useAuth } from '../contexts/AuthContext';
+import { PageHeader } from '../components/UI';
+import { fetchHospitalsByDistrict } from '../api/hospitals';
 
 export default function CreateRequest() {
   const navigate = useNavigate();
@@ -24,7 +26,7 @@ export default function CreateRequest() {
   useEffect(() => {
     if (form.district) {
       setLoadingHospitals(true);
-      api.get(`/hospitals/${form.district}`)
+      fetchHospitalsByDistrict(form.district)
         .then(({ data }) => setHospitals(data.hospitals))
         .catch(() => setHospitals([]))
         .finally(() => setLoadingHospitals(false));
@@ -61,20 +63,20 @@ export default function CreateRequest() {
   };
 
   return (
-    <div className="min-h-screen bg-bg">
+    <div className="min-h-screen bg-gray-50/50">
       
-      <div className="page-header">
-        <div className="max-w-3xl mx-auto">
-          <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">New Request</p>
-          <h1 className="text-3xl font-black">Blood Request Form</h1>
-        </div>
-      </div>
+      <PageHeader
+        eyebrow="New Request"
+        title="Blood Request Form"
+        subtitle="Fill in the details below — your request will be reviewed by the district admin"
+        maxWidth="max-w-3xl"
+      />
 
-      <div className="max-w-3xl mx-auto px-6 py-8">
-        <div className="border-2 border-bg-darker p-4 bg-bg-dark mb-6 flex items-start gap-3">
-          <AlertTriangle size={18} className="text-yellow-600 flex-shrink-0 mt-0.5" />
-          <p className="text-sm text-text-secondary">
-            Your request will be reviewed by the <strong>{form.district}</strong> district admin before going live.
+      <div className="max-w-3xl mx-auto px-6 pt-6 pb-8">
+        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6 flex items-start gap-3 shadow-sm">
+          <AlertTriangle size={20} className="text-yellow-600 flex-shrink-0 mt-0.5" />
+          <p className="text-sm text-yellow-800 font-medium">
+            Your request will be reviewed by the <strong className="font-bold">{form.district}</strong> district admin before going live.
             Emergency requests are prioritized. Please provide accurate contact details.
           </p>
         </div>
@@ -94,10 +96,10 @@ export default function CreateRequest() {
                   key={u}
                   type="button"
                   onClick={() => setForm({ ...form, urgency: u })}
-                  className={`py-3 font-bold text-sm uppercase tracking-wide border-2 transition-all ${
+                  className={`py-3 font-bold text-sm uppercase tracking-wide border-2 rounded-xl transition-all ${
                     form.urgency === u
-                      ? u === 'emergency' ? 'bg-red-600 text-white border-red-600' : 'bg-text-primary text-white border-text-primary'
-                      : 'bg-white text-text-secondary border-bg-darker hover:border-text-primary'
+                      ? u === 'emergency' ? 'bg-primary text-white border-primary shadow-sm' : 'bg-text-primary text-white border-text-primary shadow-sm'
+                      : 'bg-white text-text-secondary border-gray-200 hover:border-gray-300'
                   }`}
                 >
                   {u === 'emergency' ? '🚨 Emergency' : '🩸 Normal'}
@@ -162,7 +164,7 @@ export default function CreateRequest() {
           </div>
 
           <div className="flex gap-3">
-            <button type="button" onClick={() => navigate('/requests')} className="btn-ghost border border-bg-darker px-6 py-3">Cancel</button>
+            <button type="button" onClick={() => navigate('/requests')} className="btn-ghost bg-white border border-gray-200 px-6 py-3 rounded-xl shadow-sm">Cancel</button>
             <button type="submit" disabled={loading} className="btn-primary flex-1 py-3 disabled:opacity-60">
               {loading ? 'Submitting...' : 'Submit Request'}
             </button>

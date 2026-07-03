@@ -6,6 +6,7 @@ import api from '../api/axios';
 import toast from 'react-hot-toast';
 import { KERALA_DISTRICTS, BLOOD_GROUPS } from '../utils/constants';
 import { useAuth } from '../contexts/AuthContext';
+import { PageHeader } from '../components/UI';
 
 export default function EditRequest() {
   const { id } = useParams();
@@ -98,14 +99,14 @@ export default function EditRequest() {
 
   return (
     <div className="min-h-screen bg-bg">
-      <div className="page-header">
-        <div className="max-w-3xl mx-auto">
-          <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">Edit Request</p>
-          <h1 className="text-3xl font-black">Update Request Form</h1>
-        </div>
-      </div>
+      <PageHeader
+        eyebrow="Edit Request"
+        title="Update Request Form"
+        subtitle="Ensure all details are accurate — changes affect donor matching"
+        maxWidth="max-w-3xl"
+      />
 
-      <div className="max-w-3xl mx-auto px-6 py-8">
+      <div className="max-w-3xl mx-auto px-6 pt-6 pb-8">
         <div className="border-2 border-bg-darker p-4 bg-bg-dark mb-6 flex items-start gap-3">
           <AlertTriangle size={18} className="text-yellow-600 flex-shrink-0 mt-0.5" />
           <p className="text-sm text-text-secondary">

@@ -1,4 +1,82 @@
 import { BLOOD_GROUP_COLORS, KERALA_DISTRICTS, BLOOD_GROUPS } from '../utils/constants';
+import { Phone, Users } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+
+// ─── PageHeader ───────────────────────────────────────────────────────────────
+/**
+ * Reusable page header component used across ALL user-facing pages.
+ * Produces a fixed-height (88px) banner with consistent padding, typography,
+ * and alignment so every page feels symmetrical and professionally aligned.
+ *
+ * Props:
+ *  eyebrow   — small all-caps label above the title (e.g. "Dashboard")
+ *  title     — main heading text (required)
+ *  subtitle  — optional secondary line below title
+ *  right     — optional JSX for the right side (buttons, icons, badges)
+ *  maxWidth  — Tailwind max-w class (default: "max-w-7xl")
+ */
+export const PageHeader = ({ eyebrow, title, subtitle, right, maxWidth = 'max-w-7xl' }) => {
+  let user = null;
+  try {
+    const auth = useAuth();
+    user = auth?.user;
+  } catch (e) {
+    // Auth context might not be available in public views
+  }
+
+  const isDonor = user?.role === 'donor';
+  const isRequester = user?.role === 'requester';
+  const isAdmin = user?.role === 'admin';
+  const eyebrowColor = isDonor ? 'text-primary' : 'text-slate-600';
+
+  return (
+    <div className="page-header">
+      <div className={`${maxWidth} py-5 w-full flex items-center justify-between gap-4`}>
+        {/* Left: text block */}
+        <div className="min-w-0 flex-1">
+          {eyebrow && (
+            <p className={`text-[10px] font-black uppercase tracking-widest ${eyebrowColor} mb-1 leading-none`}>
+              {eyebrow}
+            </p>
+          )}
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="text-2xl font-black text-text-primary leading-tight truncate">
+              {title}
+            </h1>
+            {user && (
+              isDonor ? (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-red-150 border border-red-300 text-red-800 text-[10px] font-black tracking-wider uppercase select-none">
+                  <span className="w-1.5 h-1.5 bg-red-600 rounded-full animate-pulse" />
+                  Donor Account
+                </span>
+              ) : isRequester ? (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-gray-100 border border-gray-300 text-gray-700 text-[10px] font-black tracking-wider uppercase select-none">
+                  <span className="w-1.5 h-1.5 bg-gray-600 rounded-full" />
+                  Requester Account
+                </span>
+              ) : isAdmin ? (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-primary border border-primary-light text-white text-[10px] font-black tracking-wider uppercase select-none">
+                  Admin Account
+                </span>
+              ) : null
+            )}
+          </div>
+          {subtitle && (
+            <p className="text-text-secondary text-xs font-medium mt-0.5 leading-snug">
+              {subtitle}
+            </p>
+          )}
+        </div>
+        {/* Right: action slot */}
+        {right && (
+          <div className="flex items-center gap-2 shrink-0">
+            {right}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export const BloodGroupBadge = ({ group, size = 'md' }) => {
   const color = BLOOD_GROUP_COLORS[group] || 'bg-primary';
@@ -93,6 +171,44 @@ export const AnalyticsCard = ({ title, value, subtitle, icon: Icon, accent = fal
       <p className="label">{title}</p>
       <p className="text-3xl font-black text-text-primary">{value}</p>
       {subtitle && <p className="text-xs text-text-muted mt-0.5">{subtitle}</p>}
+    </div>
+  </div>
+);
+
+export const CoordinatorContactCard = () => (
+  <div className="bg-white border border-gray-150 p-5 shadow-sm relative overflow-hidden" style={{ borderRadius: '0', borderLeft: '4px solid #C8102E' }}>
+    <div className="flex items-start gap-4">
+      <div className="p-3 bg-red-50 text-primary shrink-0" style={{ borderRadius: '0' }}>
+        <Users size={20} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <h3 className="font-black text-sm text-text-primary">Contact DYFI Coordinators</h3>
+        <p className="text-xs text-text-secondary mt-1 mb-4 leading-relaxed font-medium">
+          For privacy and security reasons, direct donor/requester contact details are hidden. Please coordinate through DYFI Mokeri East MC volunteers.
+        </p>
+      </div>
+    </div>
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+      {[
+        { name: 'Rahul Tacholi', phone: '9946709455' },
+        { name: 'Abhinav PP', phone: '8606839418' },
+        { name: 'Shinantu', phone: '8086849291' }
+      ].map((admin) => (
+        <div key={admin.phone} className="bg-gray-50 p-2.5 border border-gray-200 flex items-center justify-between">
+          <div className="min-w-0 flex-1">
+            <p className="font-bold text-xs text-text-primary truncate">{admin.name}</p>
+            <p className="text-[10px] text-text-muted mt-0.5">{admin.phone}</p>
+          </div>
+          <a
+            href={`tel:${admin.phone}`}
+            className="bg-primary hover:bg-primary-dark text-white font-black p-2 hover:shadow-sm transition-all duration-200 shrink-0"
+            style={{ borderRadius: '0' }}
+            title={`Call ${admin.name}`}
+          >
+            <Phone size={12} />
+          </a>
+        </div>
+      ))}
     </div>
   </div>
 );

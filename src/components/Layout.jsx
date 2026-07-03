@@ -27,17 +27,18 @@ export default function Layout() {
       <div className="lg:ml-60 flex flex-col min-h-screen">
 
         {/* ── Mobile top bar — hidden on desktop ── */}
-        <header className="lg:hidden sticky top-0 z-20 flex items-center gap-3 h-[52px] px-4 bg-[#111111] border-b-4 border-[#CD0000]">
+        <header className="lg:hidden sticky top-0 z-20 flex items-center gap-3 h-[56px] px-4 bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm">
           <button
             id="sidebar-hamburger"
             onClick={() => setIsOpen(true)}
             aria-label="Open navigation"
-            className="text-white hover:text-[#CD0000] transition-colors p-1"
+            className="text-text-secondary hover:text-primary transition-colors p-1"
           >
             <Menu size={22} />
           </button>
-          <span className="text-white font-black text-base tracking-tight">
-            RED<span style={{ color: '#CD0000' }}>CONNECT</span>
+          <span className="flex items-center gap-1.5 whitespace-nowrap">
+            <span className="text-text-primary font-black text-base tracking-tight">RED<span className="text-primary">CONNECT</span></span>
+            <span className="text-[9px] font-bold text-gray-400 tracking-widest border-l-2 border-primary/50 pl-1.5">DYFI MOKERI EAST</span>
           </span>
         </header>
 

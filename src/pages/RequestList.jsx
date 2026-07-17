@@ -50,7 +50,7 @@ export default function RequestList() {
 
       <div className="max-w-7xl mx-auto px-6 pt-6 pb-6">
         {/* Filters */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 flex flex-wrap gap-4 items-end">
+        <div className="bg-white p-6 shadow-sm border border-gray-100 mb-6 flex flex-wrap gap-4 items-end">
           <div className="flex-1 min-w-48">
             <label className="label">Blood Group</label>
             <select value={filters.bloodGroup} onChange={(e) => setFilters({ ...filters, bloodGroup: e.target.value })} className="select">
@@ -66,7 +66,7 @@ export default function RequestList() {
               <option value="normal">Normal</option>
             </select>
           </div>
-          <button onClick={() => setFilters({ bloodGroup: '', urgency: '' })} className="btn-ghost border border-gray-200 px-6 py-3 rounded-xl">
+          <button onClick={() => setFilters({ bloodGroup: '', urgency: '' })} className="btn-ghost border border-gray-200 px-6 py-3">
             Clear
           </button>
         </div>
@@ -113,9 +113,9 @@ export default function RequestList() {
             {/* Pagination */}
             {pages > 1 && (
               <div className="flex items-center justify-center gap-2 mt-8">
-                <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="btn-ghost bg-white shadow-sm border border-gray-100 rounded-xl disabled:opacity-40 px-4 py-2">← Prev</button>
+                <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="btn-ghost bg-white shadow-sm border border-gray-100 disabled:opacity-40 px-4 py-2">← Prev</button>
                 <span className="text-sm font-bold text-text-secondary px-4">{page} / {pages}</span>
-                <button onClick={() => setPage((p) => Math.min(pages, p + 1))} disabled={page === pages} className="btn-ghost bg-white shadow-sm border border-gray-100 rounded-xl disabled:opacity-40 px-4 py-2">Next →</button>
+                <button onClick={() => setPage((p) => Math.min(pages, p + 1))} disabled={page === pages} className="btn-ghost bg-white shadow-sm border border-gray-100 disabled:opacity-40 px-4 py-2">Next →</button>
               </div>
             )}
           </>

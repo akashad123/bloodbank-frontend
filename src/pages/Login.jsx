@@ -105,7 +105,7 @@ export default function Login() {
     try {
       const { data } = await api.post('/auth/login', { phone: phone.trim() });
       login(data.user, data.token);
-      toast.success(`Logged in successfully as ${data.user.role === 'admin' ? 'ADMIN' : data.user.role === 'donor' ? 'DONOR' : 'REQUESTER'}`);
+      toast.success(`Logged in successfully as ${data.user.role === 'admin' ? 'ADMIN' : data.user.isQualifiedDonor ? 'DONOR' : 'REQUESTER'}`);
       navigate(data.user.role === 'admin' ? '/admin' : '/dashboard');
     } catch (err) {
       const msg = err.response?.data?.message || 'Sign in failed. Please try again.';

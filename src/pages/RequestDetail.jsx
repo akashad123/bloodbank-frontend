@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Phone, Trash2, Edit, UserPlus, Check, Award, AlertTriangle, ArrowRight } from 'lucide-react';
+import { Phone, Trash2, Edit, UserPlus, Check, Award, AlertTriangle, ArrowRight, X } from 'lucide-react';
 import { BloodGroupBadge, StatusBadge, UrgencyBadge, LoadingSpinner, PageHeader } from '../components/UI';
 import AssignDonorModal from '../components/AssignDonorModal';
 import { useAuth } from '../contexts/AuthContext';
@@ -18,6 +18,7 @@ export default function RequestDetail() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
   const [assignModal, setAssignModal] = useState(null);
+  const [cancelModal, setCancelModal] = useState({ isOpen: false, reason: '' });
 
   const fetchRequestDetail = async () => {
     try {
@@ -71,6 +72,25 @@ export default function RequestDetail() {
     }
   };
 
+  const handleCancelRequest = async () => {
+    const { reason } = cancelModal;
+    if (!reason.trim()) {
+      toast.error('Please provide a reason');
+      return;
+    }
+    setActionLoading('cancel');
+    try {
+      await api.put(`/requests/${id}/cancel`, { reason });
+      toast.success('Request marked as cancelled successfully!');
+      setCancelModal({ isOpen: false, reason: '' });
+      await fetchRequestDetail();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to cancel request');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   if (loading) return <LoadingSpinner message="Loading request details..." />;
   if (!request) return <div className="p-8 text-center text-text-muted">Request not found</div>;
 
@@ -83,6 +103,7 @@ export default function RequestDetail() {
     if (currentStepIdx === -1) return 0;
     return (currentStepIdx / (STEPS.length - 1)) * 100;
   };
+  const isTerminalInactive = request.status === 'cancelled';
 
   return (
     <div className="min-h-screen bg-gray-50/50 pb-12">
@@ -92,6 +113,51 @@ export default function RequestDetail() {
           onClose={() => setAssignModal(null)}
           onAssigned={fetchRequestDetail}
         />
+      )}
+
+      {cancelModal.isOpen && (
+        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-md" style={{ border: '1px solid rgba(0,0,0,0.18)', borderRadius: '0' }}>
+            <div className="bg-black text-white px-5 py-4 border-b-4 border-red-700 flex justify-between items-center">
+              <h2 className="font-black text-lg">Cancel Blood Request</h2>
+              <button onClick={() => setCancelModal({ isOpen: false, reason: '' })} className="text-gray-400 hover:text-white">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="p-5 space-y-4">
+              <p className="text-sm font-medium text-text-secondary">
+                Are you sure you want to cancel this request?
+              </p>
+              <div>
+                <label className="block text-xs font-black uppercase tracking-wider text-text-muted mb-2">Reason</label>
+                <textarea
+                  value={cancelModal.reason}
+                  onChange={(e) => setCancelModal({ ...cancelModal, reason: e.target.value })}
+                  placeholder="Enter reason..."
+                  className="input-field w-full min-h-[100px] resize-none text-sm"
+                  style={{ borderRadius: '0' }}
+                />
+              </div>
+            </div>
+            <div className="px-5 py-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3">
+              <button
+                onClick={() => setCancelModal({ isOpen: false, reason: '' })}
+                className="btn-outline px-4 py-2 text-xs uppercase tracking-wider font-bold"
+                style={{ borderRadius: '0' }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCancelRequest}
+                disabled={actionLoading === 'cancel' || !cancelModal.reason.trim()}
+                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 text-xs uppercase tracking-wider font-bold disabled:opacity-50 transition-colors"
+                style={{ borderRadius: '0' }}
+              >
+                {actionLoading === 'cancel' ? 'Processing...' : 'Confirm Cancellation'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       <PageHeader
@@ -331,8 +397,34 @@ export default function RequestDetail() {
                         <Check size={14} strokeWidth={3} /> Request Fulfilled
                       </p>
                       <p className="text-[10px] text-green-600 mt-1 leading-relaxed">
-                        This request is fully verified. The donor certificate has been issued.
+                        Blood successfully arranged through RedConnect.
                       </p>
+                    </div>
+                  )}
+
+                  {request.status === 'cancelled' && (
+                    <div className="bg-red-50 border border-red-200 p-4 text-center">
+                      <p className="text-red-800 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1">
+                        <AlertTriangle size={14} strokeWidth={3} /> Request Cancelled
+                      </p>
+                      <p className="text-[10px] text-red-600 mt-1 leading-relaxed">
+                        Request was cancelled and is no longer active.
+                      </p>
+                      {request.closureReason && (
+                        <p className="text-[10px] text-red-500 mt-2 italic">"{request.closureReason}"</p>
+                      )}
+                    </div>
+                  )}
+                  {/* Admin Cancel Action */}
+                  {!isTerminalInactive && request.status !== 'fulfilled' && (
+                    <div className="pt-4 border-t border-gray-200 mt-4">
+                      <button
+                        onClick={() => setCancelModal({ isOpen: true, reason: '' })}
+                        className="w-full bg-red-50 hover:bg-red-100 text-red-700 font-bold py-3 text-xs uppercase tracking-wider transition-colors"
+                        style={{ borderRadius: 0 }}
+                      >
+                        Mark as Cancelled
+                      </button>
                     </div>
                   )}
                 </div>
@@ -395,14 +487,23 @@ export default function RequestDetail() {
           )}
 
           {/* Owner actions */}
-          {isOwner && request.status === 'pending' && (
+          {isOwner && !isTerminalInactive && request.status !== 'fulfilled' && (
             <div className="space-y-2">
-              <Link to={`/requests/${id}/edit`} className="btn-outline w-full py-3 flex items-center justify-center gap-2 text-sm">
-                <Edit size={16} /> Edit Request
-              </Link>
-              <button onClick={handleDelete} className="btn-danger w-full py-3 flex items-center justify-center gap-2 text-sm">
-                <Trash2 size={16} /> Delete Request
-              </button>
+              {request.status === 'pending' && (
+                <Link to={`/requests/${id}/edit`} className="btn-outline w-full py-3 flex items-center justify-center gap-2 text-sm">
+                  <Edit size={16} /> Edit Request
+                </Link>
+              )}
+              
+              {!isAdmin && (
+                <button
+                  onClick={() => setCancelModal({ isOpen: true, reason: '' })}
+                  className="w-full bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 font-bold py-3 text-xs uppercase tracking-wider transition-colors"
+                  style={{ borderRadius: 0 }}
+                >
+                  Mark as Cancelled
+                </button>
+              )}
             </div>
           )}
 

@@ -1,5 +1,5 @@
 import { BLOOD_GROUP_COLORS, KERALA_DISTRICTS, BLOOD_GROUPS } from '../utils/constants';
-import { Phone, Users } from 'lucide-react';
+import { Phone, Users, CheckCircle2, Clock } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 // ─── PageHeader ───────────────────────────────────────────────────────────────
@@ -24,7 +24,7 @@ export const PageHeader = ({ eyebrow, title, subtitle, right, maxWidth = 'max-w-
     // Auth context might not be available in public views
   }
 
-  const isDonor = user?.role === 'donor';
+  const isDonor = user?.isQualifiedDonor;
   const isRequester = user?.role === 'requester';
   const isAdmin = user?.role === 'admin';
   const eyebrowColor = isDonor ? 'text-primary' : 'text-slate-600';
@@ -92,7 +92,10 @@ export const StatusBadge = ({ status }) => {
   const map = {
     pending:  'badge-pending',
     assigned: 'badge-approved',   // green — donor assigned
+    accepted: 'badge-approved',
+    completed: 'badge-approved',
     fulfilled: 'badge-fulfilled',
+    cancelled: 'badge-rejected',
   };
   return <span className={`badge ${map[status] || 'badge-pending'}`}>{status}</span>;
 };
@@ -103,22 +106,43 @@ export const UrgencyBadge = ({ urgency }) => (
   </span>
 );
 
-export const EligibilityBanner = ({ isEligible, daysLeft, lastDonationDate }) => (
-  <div className={`px-6 py-4 border-l-4 ${isEligible ? 'border-green-500 bg-green-50' : 'border-yellow-500 bg-yellow-50'}`}>
-    <p className="font-semibold text-sm">
-      {isEligible ? (
-        <span className="text-green-800">✅ You are eligible to donate blood!</span>
-      ) : (
-        <span className="text-yellow-800">⏳ Not yet eligible — {daysLeft} days remaining</span>
-      )}
-    </p>
-    {lastDonationDate && (
-      <p className="text-xs text-text-muted mt-1">
-        Last donation: {new Date(lastDonationDate).toLocaleDateString('en-IN')}
-      </p>
-    )}
-  </div>
-);
+export const EligibilityBanner = ({ eligibility }) => {
+  if (!eligibility) return null;
+  const isEligible = eligibility.isEligible;
+  
+  return (
+    <div className={`p-4 border shadow-sm ${isEligible ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'}`}>
+      <div className="flex items-center gap-2 mb-1">
+        {isEligible ? <CheckCircle2 size={16} className="text-green-600" /> : <Clock size={16} className="text-yellow-600" />}
+        <span className="font-bold text-sm tracking-widest uppercase">
+          {eligibility.badgeText}
+        </span>
+      </div>
+      
+      <div className="mt-3 text-sm flex flex-col gap-1.5">
+        <p className="flex justify-between max-w-sm">
+          <span className="text-text-muted font-bold">Status:</span>
+          <span className={`font-black ${isEligible ? 'text-green-700' : 'text-yellow-700'}`}>
+            {eligibility.status}
+          </span>
+        </p>
+        
+        {!isEligible && eligibility.status === 'Waiting Period Active' && (
+          <>
+            <p className="flex justify-between max-w-sm">
+              <span className="text-text-muted font-bold">Next Eligible Date:</span>
+              <span className="font-bold text-text-primary">{eligibility.nextEligibleDate}</span>
+            </p>
+            <p className="flex justify-between max-w-sm">
+              <span className="text-text-muted font-bold">Days Remaining:</span>
+              <span className="font-bold text-text-primary">{eligibility.daysRemaining}</span>
+            </p>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export const LoadingSpinner = ({ message = 'Loading...' }) => (
   <div className="flex flex-col items-center justify-center py-16 gap-3">

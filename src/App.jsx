@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
 import { NotificationProvider } from './contexts/NotificationContext';
-import { ProtectedRoute, AdminRoute, PublicRoute, DonorRoute, RequesterRoute } from './components/ProtectedRoute';
+import { ProtectedRoute, AdminRoute, PublicRoute, DonorRoute } from './components/ProtectedRoute';
 import Layout from './components/Layout';
 
 // Pages
@@ -43,13 +43,11 @@ function AppRoutes() {
           {/* Shared Request Detail (Donors view assigned donations, Requesters view created requests) */}
           <Route path="/requests/:id"   element={<RequestDetail />} />
 
-          {/* Requester Only Routes */}
-          <Route element={<RequesterRoute />}>
-            <Route path="/requests"       element={<RequestList />} />
-            <Route path="/requests/new"   element={<CreateRequest />} />
-            <Route path="/create-request" element={<Navigate to="/requests/new" replace />} />
-            <Route path="/requests/:id/edit" element={<EditRequest />} />
-          </Route>
+          {/* All Users can Request Blood */}
+          <Route path="/requests"       element={<RequestList />} />
+          <Route path="/requests/new"   element={<CreateRequest />} />
+          <Route path="/create-request" element={<Navigate to="/requests/new" replace />} />
+          <Route path="/requests/:id/edit" element={<EditRequest />} />
           
           {/* Donor Only Routes */}
           <Route element={<DonorRoute />}>

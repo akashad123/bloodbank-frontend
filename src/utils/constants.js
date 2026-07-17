@@ -5,6 +5,7 @@ export const KERALA_DISTRICTS = [
 ];
 
 export const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+export const ELIGIBILITY_GAP_DAYS = 90;
 
 export const BLOOD_GROUP_COLORS = {
   'A+': 'bg-red-500', 'A-': 'bg-red-700',

@@ -31,7 +31,7 @@ export default function Navbar() {
     { to: '/admin/users', label: 'Donors' },
   ];
 
-  const isDonor = user?.role === 'donor';
+  const isDonor = user?.isQualifiedDonor;
   const filteredUserLinks = userLinks.filter(item => {
     if (item.to === '/certificates' || item.to === '/chatbot') {
       return isDonor;
@@ -59,7 +59,7 @@ export default function Navbar() {
               <Link
                 key={link.to}
                 to={link.to}
-                className="px-3 py-2 text-sm font-semibold text-text-secondary hover:text-primary hover:bg-primary-50 transition-all duration-300 rounded-xl"
+                className="px-3 py-2 text-sm font-semibold text-text-secondary hover:text-primary hover:bg-primary-50 transition-all duration-300"
               >
                 {link.label}
               </Link>
@@ -70,13 +70,13 @@ export default function Navbar() {
           <div className="flex items-center gap-2">
             {/* District Badge */}
             {user && (
-              <span className="hidden md:block text-xs bg-primary-50 border border-primary-100 text-primary px-3 py-1.5 font-bold rounded-full">
+              <span className="hidden md:block text-xs bg-primary-50 border border-primary-100 text-primary px-3 py-1.5 font-bold">
                 {user.district}
               </span>
             )}
 
             {/* Notifications Bell */}
-            <Link to="/notifications" className="relative p-2.5 hover:bg-primary-50 transition-all duration-300 text-text-secondary hover:text-primary rounded-xl">
+            <Link to="/notifications" className="relative p-2.5 hover:bg-primary-50 transition-all duration-300 text-text-secondary hover:text-primary">
               <Bell size={20} />
               {unreadCount > 0 && (
                 <span className="notification-dot text-[10px]">
@@ -88,7 +88,7 @@ export default function Navbar() {
             {/* Logout */}
             <button
               onClick={handleLogout}
-              className="p-2.5 hover:bg-red-50 transition-all duration-300 text-text-secondary hover:text-red-600 rounded-xl"
+              className="p-2.5 hover:bg-red-50 transition-all duration-300 text-text-secondary hover:text-red-600"
               title="Logout"
             >
               <LogOut size={20} />
@@ -96,7 +96,7 @@ export default function Navbar() {
 
             {/* Mobile menu toggle */}
             <button
-              className="md:hidden p-2.5 hover:bg-primary-50 transition-all duration-300 text-text-secondary hover:text-primary rounded-xl"
+              className="md:hidden p-2.5 hover:bg-primary-50 transition-all duration-300 text-text-secondary hover:text-primary"
               onClick={() => setMobileOpen(!mobileOpen)}
             >
               {mobileOpen ? <X size={20} /> : <Menu size={20} />}
@@ -120,14 +120,14 @@ export default function Navbar() {
                 <Link
                   key={link.to}
                   to={link.to}
-                  className="block px-4 py-3 text-sm font-semibold text-text-secondary hover:text-primary hover:bg-primary-50 transition-all duration-300 rounded-xl"
+                  className="block px-4 py-3 text-sm font-semibold text-text-secondary hover:text-primary hover:bg-primary-50 transition-all duration-300"
                   onClick={() => setMobileOpen(false)}
                 >
                   {link.label}
                 </Link>
               ))}
               {user && (
-                <div className="px-4 py-3 text-xs text-primary font-bold bg-primary-50 rounded-xl mt-2">
+                <div className="px-4 py-3 text-xs text-primary font-bold bg-primary-50 mt-2">
                   {user.district} · {user.bloodGroup}
                 </div>
               )}

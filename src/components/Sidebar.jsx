@@ -38,13 +38,10 @@ export default function Sidebar({ isOpen, onClose }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isDonor = user?.role === 'donor';
+  const isDonor = user?.isQualifiedDonor;
   const filteredUserNav = USER_NAV.filter(item => {
     if (item.to === '/certificates' || item.to === '/chatbot') {
       return isDonor;
-    }
-    if (item.to === '/requests') {
-      return !isDonor;
     }
     return true;
   });
@@ -193,7 +190,7 @@ export default function Sidebar({ isOpen, onClose }) {
                 key={to}
                 to={to}
                 onClick={onClose}
-                className={`flex items-center gap-3 mx-2 my-1 px-3 py-2.5 text-sm font-semibold transition-all duration-300 rounded-xl ${
+                className={`flex items-center gap-3 mx-2 my-1 px-3 py-2.5 text-sm font-semibold transition-all duration-300 ${
                   active
                     ? 'bg-primary-50 text-primary'
                     : 'text-text-secondary hover:bg-primary-50 hover:text-primary'

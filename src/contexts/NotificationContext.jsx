@@ -12,7 +12,7 @@ export const NotificationProvider = ({ children }) => {
   // Badge count for new/unseen certificates — only applicable to donor accounts
   const [unreadCertificatesCount, setUnreadCertificatesCount] = useState(0);
 
-  const isDonor = user?.role === 'donor';
+  const isDonor = user?.isQualifiedDonor;
 
   // ── Fetch unread notification count ───────────────────────────────────────
   const fetchUnreadCount = useCallback(async () => {

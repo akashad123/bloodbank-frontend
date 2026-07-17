@@ -73,7 +73,7 @@ export default function CreateRequest() {
       />
 
       <div className="max-w-3xl mx-auto px-6 pt-6 pb-8">
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6 flex items-start gap-3 shadow-sm">
+        <div className="bg-yellow-50 border border-yellow-200 p-4 mb-6 flex items-start gap-3 shadow-sm">
           <AlertTriangle size={20} className="text-yellow-600 flex-shrink-0 mt-0.5" />
           <p className="text-sm text-yellow-800 font-medium">
             Your request will be reviewed by the <strong className="font-bold">{form.district}</strong> district admin before going live.
@@ -96,7 +96,7 @@ export default function CreateRequest() {
                   key={u}
                   type="button"
                   onClick={() => setForm({ ...form, urgency: u })}
-                  className={`py-3 font-bold text-sm uppercase tracking-wide border-2 rounded-xl transition-all ${
+                  className={`py-3 font-bold text-sm uppercase tracking-wide border-2 transition-all ${
                     form.urgency === u
                       ? u === 'emergency' ? 'bg-primary text-white border-primary shadow-sm' : 'bg-text-primary text-white border-text-primary shadow-sm'
                       : 'bg-white text-text-secondary border-gray-200 hover:border-gray-300'
@@ -164,7 +164,7 @@ export default function CreateRequest() {
           </div>
 
           <div className="flex gap-3">
-            <button type="button" onClick={() => navigate('/requests')} className="btn-ghost bg-white border border-gray-200 px-6 py-3 rounded-xl shadow-sm">Cancel</button>
+            <button type="button" onClick={() => navigate('/requests')} className="btn-ghost bg-white border border-gray-200 px-6 py-3 shadow-sm">Cancel</button>
             <button type="submit" disabled={loading} className="btn-primary flex-1 py-3 disabled:opacity-60">
               {loading ? 'Submitting...' : 'Submit Request'}
             </button>

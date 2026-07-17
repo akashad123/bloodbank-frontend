@@ -34,9 +34,9 @@ export default function AdminDashboard() {
   const statCards = [
     { label: 'Total Donors',     value: stats?.totalDonors,       icon: Users,       accent: false },
     { label: 'Eligible Donors',  value: stats?.eligibleDonors,    icon: CheckCircle, accent: true  },
-    { label: 'Pending Requests', value: stats?.pendingRequests,   icon: Clock,       accent: false },
-    { label: 'Active Requests',  value: stats?.approvedRequests,  icon: Droplets,    accent: false },
-    { label: 'Fulfilled',        value: stats?.fulfilledRequests, icon: TrendingUp,  accent: false },
+    { label: 'Active Requests',  value: stats?.activeRequests,    icon: Clock,       accent: false },
+    { label: 'Inactive Requests',value: stats?.inactiveRequests,  icon: Droplets,    accent: false },
+    { label: 'Total Requests',   value: stats?.totalRequests,     icon: TrendingUp,  accent: false },
     { label: 'Fulfillment Rate', value: `${stats?.fulfillmentRate}%`, icon: TrendingUp, accent: true },
   ];
 
@@ -249,8 +249,10 @@ export default function AdminDashboard() {
                     </div>
                     <span className={`badge shrink-0 ${
                       req.status === 'pending'   ? 'badge-pending'   :
-                      req.status === 'approved'  ? 'badge-approved'  :
-                      req.status === 'rejected'  ? 'badge-rejected'  : 'badge-fulfilled'
+                      ['assigned', 'accepted', 'completed'].includes(req.status) ? 'badge-approved' :
+                      req.status === 'fulfilled' ? 'badge-fulfilled' :
+                      req.status === 'closed'    ? 'bg-gray-100 text-gray-700' :
+                      'bg-red-100 text-red-700' // cancelled
                     }`}>
                       {req.status}
                     </span>
@@ -260,7 +262,7 @@ export default function AdminDashboard() {
             )}
 
             {/* Pending alert */}
-            {stats?.pendingRequests > 0 && (
+            {stats?.activeRequests > 0 && (
               <div
                 className="mt-6 p-4 flex flex-wrap items-center gap-3"
                 style={{
@@ -271,7 +273,7 @@ export default function AdminDashboard() {
               >
                 <AlertTriangle size={20} className="flex-shrink-0" style={{ color: '#B03030' }} />
                 <p className="text-sm font-bold flex-1 min-w-0" style={{ color: '#7A1A1A' }}>
-                  {stats.pendingRequests} request(s) awaiting your approval
+                  {stats.activeRequests} active request(s) need attention
                 </p>
                 <Link
                   to="/admin/requests?status=pending"

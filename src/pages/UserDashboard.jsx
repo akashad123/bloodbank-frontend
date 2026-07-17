@@ -6,18 +6,19 @@ import { useAuth } from '../contexts/AuthContext';
 import { BloodGroupBadge, EligibilityBanner, StatusBadge, UrgencyBadge, LoadingSpinner, PageHeader } from '../components/UI';
 import api from '../api/axios';
 import { timeAgo, formatDate } from '../utils/constants';
+import { calculateEligibility } from '../utils/eligibility';
 import toast from 'react-hot-toast';
 
 export default function UserDashboard() {
   const { user } = useAuth();
-  const [eligibility, setEligibility] = useState(null);
+  const isDonor = user?.isQualifiedDonor;
+  const eligibility = calculateEligibility(user);
   const [requests, setRequests] = useState([]);
   const [requestsTotal, setRequestsTotal] = useState(0);
   const [certCount, setCertCount] = useState(0);
   const [assignedRequests, setAssignedRequests] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const isDonor = user?.role === 'donor';
 
   const fetchAssigned = async () => {
     try {
@@ -31,13 +32,11 @@ export default function UserDashboard() {
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const [eRes, rRes, cRes, aRes] = await Promise.all([
-          api.get('/users/eligibility'),
+        const [rRes, cRes, aRes] = await Promise.all([
           api.get('/requests/my?limit=100'),
           api.get('/certificates/count'),
           api.get('/requests/assigned'),
         ]);
-        setEligibility(eRes.data);
         setRequests(rRes.data.requests ?? []);
         setRequestsTotal(rRes.data.total ?? 0);
         setCertCount(cRes.data.count ?? 0);
@@ -140,8 +139,9 @@ export default function UserDashboard() {
 
   const quickActions = isDonor
     ? [
-        { to: '/chatbot', title: 'AI Assistant', desc: 'Ask RedConnect AI', icon: AlertTriangle, primary: true },
-        { to: '/certificates', title: 'Certificates', desc: 'Download my certificates', icon: Award },
+        { to: '/chatbot', title: 'AI Assistant', desc: 'Ask RedConnect AI', icon: AlertTriangle },
+        { to: '/requests/new', title: 'New Request', desc: 'Create a blood request', icon: Plus, primary: user?.isEligibleToDonate },
+        { to: '/requests', title: 'My Requests', desc: 'Manage your requests', icon: ClipboardList },
         { to: '/notifications', title: 'Notifications', desc: 'Check your alerts', icon: Bell },
         { to: '/profile', title: 'My Profile', desc: 'Manage your account', icon: User }
       ]
@@ -164,86 +164,7 @@ export default function UserDashboard() {
 
       <div className="max-w-7xl mx-auto px-6 pt-6 pb-8 space-y-6">
         
-        {/* Dynamic Welcome Card */}
-        <motion.div variants={fadeUp} initial="hidden" animate="show">
-          {isDonor ? (
-            <div className="relative overflow-hidden bg-gradient-to-r from-red-50 to-white border border-red-100 p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6" style={{ borderRadius: '0' }}>
-              {/* Left: icon and text */}
-              <div className="flex items-start gap-4">
-                <div className="p-3 bg-red-50 text-primary shrink-0 animate-pulse" style={{ borderRadius: '0' }}>
-                  <Droplets size={32} fill="currentColor" />
-                </div>
-                <div className="space-y-1">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-primary">DONOR DASHBOARD</span>
-                  <h2 className="text-xl font-black text-text-primary uppercase tracking-tight">Thank you for being a lifesaver</h2>
-                  <p className="text-text-secondary text-sm leading-relaxed max-w-xl">
-                    Your readiness to donate blood saves lives. Keep your details updated, track your eligibility status below, and view any assigned donation requests.
-                  </p>
-                  {/* Certificate highlights */}
-                  {certCount > 0 ? (
-                    <div className="mt-3 inline-flex items-center gap-2 text-xs font-bold text-red-800 bg-red-50 px-2.5 py-1 border border-red-200" style={{ borderRadius: '0' }}>
-                      🏆 You have earned {certCount} donation certificate{certCount > 1 ? 's' : ''}!
-                      <Link to="/certificates" className="underline hover:text-red-950 ml-1">View & Download</Link>
-                    </div>
-                  ) : (
-                    <p className="text-xs text-text-muted mt-2">No certificates earned yet. Complete your assigned donations to receive recognition certificates.</p>
-                  )}
-                </div>
-              </div>
-              {/* Right: eligibility summary */}
-              <div className="shrink-0 w-full md:w-auto bg-white border border-gray-150 p-4 min-w-[220px]" style={{ borderRadius: '0' }}>
-                <p className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-1.5">Your Eligibility Status</p>
-                <p className="text-sm font-bold text-text-primary">{user?.donorStatus || 'Pending Pre-screening'}</p>
-                <p className="text-xs text-text-secondary mt-1">
-                  {eligibility?.isEligible 
-                    ? "✅ Ready to donate today" 
-                    : `⏳ Waiting period active (${eligibility?.daysUntilEligible || 0} days remaining)`
-                  }
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="relative overflow-hidden bg-gradient-to-r from-slate-50 to-white border border-gray-200 p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6" style={{ borderRadius: '0' }}>
-              {/* Left: icon and text */}
-              <div className="flex items-start gap-4">
-                <div className="p-3 bg-slate-50 text-slate-700 shrink-0" style={{ borderRadius: '0' }}>
-                  <ClipboardList size={32} />
-                </div>
-                <div className="space-y-1">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">REQUESTER PANEL</span>
-                  <h2 className="text-xl font-black text-text-primary uppercase tracking-tight">Emergency blood request support</h2>
-                  <p className="text-text-secondary text-sm leading-relaxed max-w-xl">
-                    Need blood for yourself or a loved one? Create an urgent request below and our system will match you with eligible, verified donors in your area.
-                  </p>
-                  {/* Request tracking focus & active status */}
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white border border-gray-200 text-xs font-bold text-text-primary" style={{ borderRadius: '0' }}>
-                      📊 Active Requests: {requestsTotal}
-                    </span>
-                    {pendingCount > 0 && (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 border border-amber-250 text-xs font-bold text-amber-800" style={{ borderRadius: '0' }}>
-                        ⏳ Pending Admin Approval: {pendingCount}
-                      </span>
-                    )}
-                    {assignedCount > 0 && (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 border border-green-200 text-xs font-bold text-green-700" style={{ borderRadius: '0' }}>
-                        🤝 Donors Assigned: {assignedCount}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-              {/* Right: support info */}
-              <div className="shrink-0 w-full md:w-auto bg-white border border-gray-150 p-4 min-w-[220px]" style={{ borderRadius: '0' }}>
-                <p className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-1.5">Direct Helpdesk</p>
-                <p className="text-xs font-bold text-text-primary">DYFI Mokeri East MC</p>
-                <p className="text-xs text-text-secondary mt-1">Rahul Tacholi: 9946709455</p>
-                <p className="text-xs text-text-secondary">Abhinav PP: 8606839418</p>
-              </div>
-            </div>
-          )}
-        </motion.div>
-
+     
         {/* Assigned Blood Donations - Donor Only */}
         {isDonor && assignedRequests.length > 0 && (
           <motion.div variants={fadeUp} initial="hidden" animate="show" className="space-y-4">
@@ -351,12 +272,29 @@ export default function UserDashboard() {
           </motion.div>
         )}
 
+        {isDonor && eligibility.status === 'Waiting Period Active' && (
+          <motion.div variants={fadeUp} className="mb-8">
+            <div className="bg-amber-50 border-2 border-amber-400 p-6 shadow-sm flex items-start gap-4">
+              <div className="w-12 h-12 bg-amber-100 flex items-center justify-center shrink-0">
+                <AlertTriangle size={24} className="text-amber-600" />
+              </div>
+              <div>
+                <h3 className="text-amber-800 font-black text-lg">WAITING PERIOD ACTIVE</h3>
+                <p className="text-amber-700 font-medium mt-1">
+                  You are currently in the post-donation waiting period. You will become eligible to donate again on <strong>{eligibility.nextEligibleDate}</strong>.
+                </p>
+                <p className="text-amber-800 font-bold mt-2">Days Remaining: {eligibility.daysRemaining}</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Quick Stats */}
         <motion.div
           variants={{ show: { transition: { staggerChildren: 0.1 } } }}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-2 md:grid-cols-5 gap-4"
+          className="grid grid-cols-2 md:grid-cols-4 gap-4"
         >
           {statsItems.map((stat, i) => (
             <motion.div key={i} variants={fadeUp} className={`card flex flex-col justify-between ${stat.accent ? `${colors.accentBadge} border` : ''}`}>
@@ -374,7 +312,7 @@ export default function UserDashboard() {
           variants={fadeUp}
           initial="hidden"
           animate="show"
-          className={`grid grid-cols-1 ${quickActions.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-2 lg:grid-cols-4'} gap-4`}
+          className={`grid grid-cols-1 ${quickActions.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-2 lg:grid-cols-3'} gap-4`}
         >
           {quickActions.map((action, i) => {
             const Icon = action.icon;
@@ -408,8 +346,8 @@ export default function UserDashboard() {
           })}
         </motion.div>
 
-        {/* Recent Requests - Requester Only */}
-        {!isDonor && (
+        {/* Recent Requests - All Users */}
+
           <motion.div variants={fadeUp} initial="hidden" animate="show">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-black">Your Recent Requests</h2>
@@ -460,7 +398,6 @@ export default function UserDashboard() {
               </div>
             )}
           </motion.div>
-        )}
       </div>
     </div>
   );

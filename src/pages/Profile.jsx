@@ -6,11 +6,12 @@ import { useAuth } from '../contexts/AuthContext';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 import { KERALA_DISTRICTS, BLOOD_GROUPS, formatDate } from '../utils/constants';
+import { calculateEligibility } from '../utils/eligibility';
 
 export default function Profile() {
   const { user, updateUser } = useAuth();
-  const isDonor = user?.role === 'donor';
-  const [eligibility, setEligibility] = useState(null);
+  const isDonor = user?.isQualifiedDonor;
+  const eligibility = calculateEligibility(user);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
@@ -21,8 +22,6 @@ export default function Profile() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [eRes] = await Promise.all([api.get('/users/eligibility')]);
-        setEligibility(eRes.data);
         setForm({
           name: user?.name || '',
           phone: user?.phone || '',
@@ -147,11 +146,7 @@ export default function Profile() {
         {isDonor && (
           <div className="space-y-4">
             {eligibility && (
-              <EligibilityBanner
-                isEligible={eligibility.isEligible}
-                daysLeft={eligibility.daysUntilEligible}
-                lastDonationDate={eligibility.lastDonationDate}
-              />
+              <EligibilityBanner eligibility={eligibility} />
             )}
             <div className="bg-white p-4 shadow-sm border border-gray-150 flex items-center justify-between" style={{ borderRadius: '0' }}>
               <span className="text-sm font-bold text-text-secondary">Donor Medical Status</span>
@@ -162,7 +157,7 @@ export default function Profile() {
                 user?.donorStatus === 'Screening Failed' ? 'bg-red-50 border-red-200 text-red-700' :
                 'bg-gray-50 border-gray-200 text-text-muted'
               }`} style={{ borderRadius: '0' }}>
-                {user?.donorStatus || 'Pending Screening'}
+                {eligibility?.status || 'Pending Screening'}
               </span>
             </div>
           </div>

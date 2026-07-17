@@ -15,25 +15,25 @@ const fadeUp = { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0 } };
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white overflow-x-hidden w-full">
       {/* Top Bar */}
-      <nav className="bg-white/90 backdrop-blur-md text-text-primary px-6 py-4 flex items-center justify-between border-b border-gray-100 shadow-sm sticky top-0 z-50">
-        <div className="flex items-center gap-1.5 sm:gap-2 font-black text-lg sm:text-xl tracking-tight shrink-0">
-          <Droplets size={28} className="text-primary shrink-0" fill="currentColor" />
-          <span className="flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
+      <nav className="bg-white/90 backdrop-blur-md text-text-primary px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between border-b border-gray-100 shadow-sm sticky top-0 z-50 w-full">
+        <div className="flex items-center gap-1.5 sm:gap-2 font-black text-base sm:text-lg md:text-xl tracking-tight shrink-0">
+          <Droplets size={24} className="text-primary shrink-0 sm:w-[28px] sm:h-[28px]" fill="currentColor" />
+          <span className="flex items-center gap-1 sm:gap-2 whitespace-nowrap">
             <span>RED<span className="text-primary">CONNECT</span></span>
-            <span className="text-[9px] sm:text-[11px] font-bold text-gray-400 tracking-widest border-l-2 border-primary/50 pl-1.5 sm:pl-2">DYFI MOKERI EAST</span>
+            <span className="hidden md:inline-block text-[9px] sm:text-[11px] font-bold text-gray-400 tracking-widest border-l-2 border-primary/50 pl-1.5 sm:pl-2">DYFI MOKERI EAST</span>
           </span>
         </div>
-        <div className="flex items-center gap-3">
-          <Link to="/login" className="btn-ghost text-text-secondary hover:text-primary text-sm px-4 py-2 font-bold rounded-xl">Login</Link>
-          <Link to="/register" className="btn-primary py-2 text-xs rounded-xl shadow-sm">Register</Link>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Link to="/login" className="btn-ghost text-text-secondary hover:text-primary text-xs sm:text-sm px-3 sm:px-4 py-2 font-bold rounded-xl">Login</Link>
+          <Link to="/register" className="btn-primary py-2 text-xs rounded-xl shadow-sm px-3 sm:px-4">Register</Link>
         </div>
       </nav>
 
       {/* Hero */}
-      <section className="bg-gradient-to-b from-white via-primary-50/30 to-white text-text-primary">
-        <div className="max-w-7xl mx-auto px-6 py-20 md:py-32">
+      <section className="bg-gradient-to-b from-white via-primary-50/30 to-white text-text-primary w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20 md:py-32">
           <motion.div
             variants={fadeUp}
             initial="hidden"
@@ -41,27 +41,27 @@ export default function Landing() {
             transition={{ duration: 0.6 }}
             className="max-w-3xl"
           >
-            <div className="inline-flex items-center gap-2 bg-primary-50 border border-primary-100 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest text-primary mb-6 shadow-sm">
-              <span className="w-2 h-2 bg-primary animate-pulse rounded-full" />
-              DYFI MOKERI EAST MC
+            <div className="inline-flex items-center gap-2 bg-primary-50 border border-primary-100 px-3 py-1.5 sm:px-4 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-widest text-primary mb-6 shadow-sm">
+              <span className="w-2 h-2 bg-primary animate-pulse rounded-full shrink-0" />
+              <span className="truncate">DYFI MOKERI EAST MC</span>
             </div>
 
-            <h1 className="text-5xl md:text-7xl font-black leading-none mb-6">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-black leading-tight sm:leading-none mb-4 sm:mb-6">
               BLOOD WHEN<br />
               <span className="text-primary">IT MATTERS</span><br />
               MOST.
             </h1>
 
-            <p className="text-text-secondary text-lg max-w-xl mb-10">
+            <p className="text-text-secondary text-base sm:text-lg max-w-xl mb-8 sm:mb-10">
               Connecting blood donors with patients across Kerala's 14 districts in real-time. 
               Fast. Verified. Life-saving.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/register" className="btn-primary text-base px-8 py-4 shadow-md">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full">
+              <Link to="/register" className="btn-primary text-base px-8 py-3.5 sm:py-4 shadow-md w-full sm:w-auto text-center flex items-center justify-center min-h-[56px]">
                 Register as Donor
               </Link>
-              <Link to="/register" className="btn-outline text-base px-8 py-4">
+              <Link to="/register" className="btn-outline text-base px-8 py-3.5 sm:py-4 w-full sm:w-auto text-center flex items-center justify-center min-h-[56px]">
                 Request Blood
               </Link>
             </div>
@@ -79,13 +79,13 @@ export default function Landing() {
       </div>
 
       {/* Stats Bar */}
-      <div className="bg-white border-b border-gray-100 shadow-sm relative z-10 -mt-1 rounded-b-3xl">
-        <div className="max-w-7xl mx-auto px-6 py-10 grid grid-cols-2 md:grid-cols-4 gap-8">
+      <div className="bg-white border-b border-gray-100 shadow-sm relative z-10 -mt-1 rounded-b-3xl w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10 grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-8 sm:gap-8">
           {[
-            { value: '14', label: 'Districts Covered' },
+            { value: '14', label: 'Districts' },
             { value: '8', label: 'Blood Groups' },
-            { value: '< 5min', label: 'Avg Response Time' },
-            { value: '24/7', label: 'Emergency Ready' },
+            { value: '< 5 min', label: 'Response Time' },
+            { value: '24/7', label: 'Ready' },
           ].map((stat, i) => (
             <motion.div
               key={i}
@@ -94,23 +94,23 @@ export default function Landing() {
               whileInView="show"
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="text-center"
+              className="text-center flex flex-col items-center justify-center px-1"
             >
-              <div className="text-4xl font-black text-primary mb-1">{stat.value}</div>
-              <div className="text-sm text-text-secondary font-semibold">{stat.label}</div>
+              <div className="text-2xl sm:text-3xl md:text-4xl font-black text-primary mb-1 md:mb-2">{stat.value}</div>
+              <div className="text-xs sm:text-sm text-text-secondary font-semibold">{stat.label}</div>
             </motion.div>
           ))}
         </div>
       </div>
 
       {/* Features */}
-      <section className="max-w-7xl mx-auto px-6 py-20">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-20 w-full">
         <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
           <p className="text-primary font-bold text-xs uppercase tracking-widest mb-2">Why RedConnect</p>
-          <h2 className="text-3xl font-black mb-12">Built for Kerala. <span className="text-primary">Built for Speed.</span></h2>
+          <h2 className="text-2xl sm:text-3xl font-black mb-8 sm:mb-12">Built for Kerala. <span className="text-primary block sm:inline">Built for Speed.</span></h2>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {features.map((f, i) => (
             <motion.div
               key={i}
@@ -132,16 +132,16 @@ export default function Landing() {
       </section>
 
       {/* CTA */}
-      <div className="px-6 pb-20">
-        <section className="bg-primary text-white max-w-7xl mx-auto shadow-xl overflow-hidden relative">
+      <div className="px-4 sm:px-6 pb-16 sm:pb-20 w-full">
+        <section className="bg-primary text-white max-w-7xl mx-auto shadow-xl overflow-hidden relative rounded-2xl sm:rounded-3xl">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4"></div>
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-black opacity-10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4"></div>
-          <div className="relative max-w-7xl mx-auto px-8 py-16 md:py-20 flex flex-col md:flex-row items-center justify-between gap-8 z-10">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-black mb-3">Ready to save a life?</h2>
-              <p className="text-primary-100 text-lg">Join thousands of donors across Kerala making an impact.</p>
+          <div className="relative max-w-7xl mx-auto px-6 sm:px-8 py-12 sm:py-16 md:py-20 flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8 z-10 text-center md:text-left">
+            <div className="w-full">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-black mb-2 sm:mb-3">Ready to save a life?</h2>
+              <p className="text-primary-100 text-base sm:text-lg">Join thousands of donors across Kerala making an impact.</p>
             </div>
-            <Link to="/register" className="bg-white text-primary font-bold px-8 py-4 rounded-xl shadow-lg hover:bg-gray-50 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex-shrink-0 text-center w-full md:w-auto">
+            <Link to="/register" className="bg-white text-primary font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl shadow-lg hover:bg-gray-50 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex-shrink-0 text-center w-full md:w-auto flex items-center justify-center min-h-[56px]">
               Get Started — It's Free
             </Link>
           </div>
@@ -149,7 +149,7 @@ export default function Landing() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-gray-50 border-t border-gray-200 text-text-secondary px-6 py-10 text-sm text-center">
+      <footer className="bg-gray-50 border-t border-gray-200 text-text-secondary px-4 sm:px-6 py-8 sm:py-10 text-sm text-center w-full">
         <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-3 text-text-primary font-black shrink-0">
           <Droplets size={20} className="text-primary shrink-0" fill="currentColor" />
           <span className="flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">

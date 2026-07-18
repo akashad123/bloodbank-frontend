@@ -232,7 +232,7 @@ export default function RequestDetail() {
                 { label: 'Urgency', value: request.urgency.charAt(0).toUpperCase() + request.urgency.slice(1) },
                 { label: 'Status', value: request.status.charAt(0).toUpperCase() + request.status.slice(1) },
                 { label: 'Posted', value: timeAgo(request.createdAt) },
-                { label: 'By', value: request.createdBy?.name || 'Unknown' },
+                { label: 'By', value: request.createdBy?.name || request.contactName || 'Deleted User' },
               ].map(({ label, value }) => (
                 <div key={label}>
                   <p className="text-xs font-bold uppercase tracking-widest text-primary mb-1">{label}</p>
@@ -306,11 +306,11 @@ export default function RequestDetail() {
                     <span className="w-2 h-2 bg-primary animate-pulse" style={{ borderRadius: '50%' }} />
                     {request.status}
                   </p>
-                  {request.assignedDonor && (
+                  {(request.assignedDonor || request.assignedDonorName) && (
                     <div className="mt-3 pt-3 border-t border-gray-200">
                       <p className="text-[9px] font-black uppercase tracking-widest text-text-muted">Assigned Donor</p>
-                      <p className="font-bold text-xs mt-1 text-text-primary">{request.assignedDonor.name}</p>
-                      <p className="text-[11px] text-text-secondary mt-0.5">{request.assignedDonor.phone}</p>
+                      <p className="font-bold text-xs mt-1 text-text-primary">{request.assignedDonor?.name || request.assignedDonorName || 'Deleted User'}</p>
+                      <p className="text-[11px] text-text-secondary mt-0.5">{request.assignedDonor?.phone || request.assignedDonorPhone || '—'}</p>
                     </div>
                   )}
                 </div>

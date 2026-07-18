@@ -152,7 +152,7 @@ export default function AdminRequests() {
                       </div>
                       <p className="text-xs" style={{ color: '#888888' }}>{req.district}</p>
                       <p className="text-xs overflow-hidden text-ellipsis" style={{ color: '#AAAAAA' }}>
-                        {req.units} unit(s) of {req.bloodGroup} · Req by {req.createdBy?.name || 'Unknown'} · {timeAgo(req.createdAt)}
+                        {req.units} unit(s) of {req.bloodGroup} · Req by {req.createdBy?.name || req.contactName || 'Deleted User'} · {timeAgo(req.createdAt)}
                       </p>
                       <p className="text-xs break-all" style={{ color: '#AAAAAA' }}>
                         Contact: <strong style={{ color: '#444444' }}>{req.contactName}</strong> · {req.contactPhone}
@@ -176,7 +176,7 @@ export default function AdminRequests() {
                       )}
 
                       {/* Assigned Donor Indicator */}
-                      {req.assignedDonor ? (
+                      {(req.assignedDonor || req.assignedDonorName) ? (
                         <div
                           className="mt-1 flex items-center gap-2 px-2 py-1.5"
                           style={{
@@ -186,7 +186,7 @@ export default function AdminRequests() {
                         >
                           <UserPlus size={12} className="shrink-0" style={{ color: '#22C55E' }} />
                           <span className="text-xs font-semibold" style={{ color: '#166534' }}>
-                            Assigned: {req.assignedDonor?.name || 'Donor'} · {req.assignedDonor?.phone || '—'}
+                            Assigned: {req.assignedDonor?.name || req.assignedDonorName || 'Deleted User'} · {req.assignedDonor?.phone || req.assignedDonorPhone || '—'}
                           </span>
                         </div>
                       ) : req.status === 'pending' && req.matchedDonors?.length > 0 ? (

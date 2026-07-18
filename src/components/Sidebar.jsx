@@ -20,6 +20,7 @@ const ADMIN_NAV = [
   { to: '/admin',           label: 'Dashboard',       icon: LayoutDashboard, exact: true },
   { to: '/admin/requests',  label: 'Manage Requests', icon: ClipboardList,   exact: false },
   { to: '/admin/users',     label: 'Manage Donors',   icon: Users,           exact: false },
+  { to: '/admin/manage-users', label: 'User Management', icon: User,        exact: false },
   { to: '/admin/hospitals', label: 'Hospitals',        icon: Building2,       exact: false },
 ];
 

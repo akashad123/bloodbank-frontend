@@ -21,6 +21,7 @@ import Certificates from './pages/Certificates';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminRequests from './pages/AdminRequests';
 import AdminUsers from './pages/AdminUsers';
+import AdminUserManagement from './pages/AdminUserManagement';
 import AdminHospitals from './pages/AdminHospitals';
 
 function AppRoutes() {
@@ -57,12 +58,12 @@ function AppRoutes() {
         </Route>
       </Route>
 
-      {/* Admin — admin role only — also wrapped in sidebar Layout */}
       <Route element={<AdminRoute />}>
         <Route element={<Layout />}>
           <Route path="/admin"          element={<AdminDashboard />} />
           <Route path="/admin/requests" element={<AdminRequests />} />
           <Route path="/admin/users"    element={<AdminUsers />} />
+          <Route path="/admin/manage-users" element={<AdminUserManagement />} />
           <Route path="/admin/hospitals" element={<AdminHospitals />} />
         </Route>
       </Route>

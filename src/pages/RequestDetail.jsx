@@ -19,6 +19,7 @@ export default function RequestDetail() {
   const [actionLoading, setActionLoading] = useState(null);
   const [assignModal, setAssignModal] = useState(null);
   const [cancelModal, setCancelModal] = useState({ isOpen: false, reason: '' });
+  const [officialContacts, setOfficialContacts] = useState([]);
 
   const fetchRequestDetail = async () => {
     try {
@@ -31,8 +32,18 @@ export default function RequestDetail() {
     }
   };
 
+  const fetchContacts = async () => {
+    try {
+      const { data } = await api.get('/settings/contacts');
+      setOfficialContacts(data.contacts || []);
+    } catch (err) {
+      console.error('Failed to load official contacts', err);
+    }
+  };
+
   useEffect(() => {
     fetchRequestDetail();
+    fetchContacts();
   }, [id]);
 
   const handleDelete = async () => {
@@ -433,50 +444,37 @@ export default function RequestDetail() {
           )}
 
           {/* Contact Details Card */}
-          {isAdmin || isOwner ? (
-            <div className="bg-primary-50 border border-primary-100 p-6 shadow-sm relative overflow-hidden" style={{ borderRadius: '0' }}>
-              <div className="absolute top-0 right-0 p-4 opacity-10">
-                <Phone size={64} className="text-primary" />
-              </div>
-              <h3 className="font-black text-lg mb-4 text-text-primary relative z-10">Contact</h3>
-              <p className="font-bold text-sm text-text-primary relative z-10">{request.contactName}</p>
-              <a
-                href={`tel:${request.contactPhone}`}
-                className="inline-flex items-center gap-2 text-primary bg-white px-4 py-2 shadow-sm font-bold text-sm mt-3 hover:-translate-y-0.5 hover:shadow-md transition-all relative z-10"
-                style={{ borderRadius: '0' }}
-              >
-                <Phone size={16} /> {request.contactPhone}
-              </a>
-            </div>
-          ) : (
-            <div className="bg-primary-50 border border-primary-100 p-6 shadow-sm relative overflow-hidden" style={{ borderRadius: '0' }}>
-              <h3 className="font-black text-lg mb-4 text-text-primary">Admin Coordination</h3>
-              <p className="text-xs text-text-secondary mb-4 font-medium leading-relaxed">
-                For privacy and safety, direct contact details are hidden. Please coordinate through the admin team:
-              </p>
-              <div className="space-y-3">
-                {[
-                  { name: 'Rahul Tacholi', phone: '9946709455' },
-                  { name: 'Abhinav PP', phone: '8606839418' },
-                  { name: 'Shinantu', phone: '8086849291' },
-                ].map((admin) => (
-                  <div key={admin.phone} className="bg-white p-3 border border-gray-150 flex items-center justify-between">
+          <div className="bg-primary-50 border border-primary-100 p-6 shadow-sm relative overflow-hidden" style={{ borderRadius: '0' }}>
+            <h3 className="font-black text-lg mb-4 text-text-primary">Blood Bank Contacts</h3>
+            <p className="text-xs text-text-secondary mb-4 font-medium leading-relaxed">
+              For coordination, privacy, and safety, please contact the official admin team below:
+            </p>
+            <div className="space-y-3">
+              {officialContacts.length > 0 ? (
+                officialContacts.map((contact) => (
+                  <div key={contact.phone + contact.name} className="bg-white p-3 border border-gray-150 flex items-center justify-between">
                     <div>
-                      <p className="font-bold text-sm text-text-primary">{admin.name}</p>
-                      <p className="text-xs text-text-secondary mt-0.5">{admin.phone}</p>
+                      <p className="font-bold text-sm text-text-primary">{contact.name || 'Blood Bank Admin'}</p>
+                      <p className="text-xs text-text-secondary mt-0.5">{contact.phone}</p>
                     </div>
-                    <a
-                      href={`tel:${admin.phone}`}
-                      className="bg-primary text-white font-bold p-2 text-xs hover:bg-primary-dark transition-colors shrink-0"
-                      style={{ borderRadius: '0' }}
-                    >
-                      <Phone size={12} />
-                    </a>
+                    {contact.phone && (
+                      <a
+                        href={`tel:${contact.phone}`}
+                        className="bg-primary text-white font-bold p-2 text-xs hover:bg-primary-dark transition-colors shrink-0"
+                        style={{ borderRadius: '0' }}
+                      >
+                        <Phone size={12} />
+                      </a>
+                    )}
                   </div>
-                ))}
-              </div>
+                ))
+              ) : (
+                <div className="bg-white p-3 border border-gray-150 text-center">
+                  <p className="text-xs text-text-muted">Loading contacts...</p>
+                </div>
+              )}
             </div>
-          )}
+          </div>
 
           {/* Admin note */}
           {request.adminNote && (

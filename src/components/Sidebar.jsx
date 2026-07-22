@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   Droplets, LayoutDashboard, Droplet, Bell, Bot,
-  User, Users, ClipboardList, LogOut, X, Award, Building2,
+  User, Users, ClipboardList, LogOut, X, Award, Building2, Phone
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../contexts/NotificationContext';
@@ -22,6 +22,7 @@ const ADMIN_NAV = [
   { to: '/admin/users',     label: 'Manage Donors',   icon: Users,           exact: false },
   { to: '/admin/manage-users', label: 'User Management', icon: User,        exact: false },
   { to: '/admin/hospitals', label: 'Hospitals',        icon: Building2,       exact: false },
+  { to: '/admin/contacts',  label: 'Manage Contacts',  icon: Phone,           exact: false },
 ];
 
 /**

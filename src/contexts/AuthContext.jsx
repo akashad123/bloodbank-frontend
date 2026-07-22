@@ -16,10 +16,39 @@ export const AuthProvider = ({ children }) => {
   // Initialize socket and join user room
   useEffect(() => {
     if (token && user) {
-      const s = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000');
-      s.emit('join_user_room', user._id);
+      const socketUrl = import.meta.env.VITE_SOCKET_URL;
+      
+      if (!socketUrl) {
+        console.error('VITE_SOCKET_URL is not configured. Socket.IO connection skipped.');
+        return;
+      }
+
+      console.log('[Socket] Initializing connection to:', socketUrl);
+      const s = io(socketUrl);
+      
+      s.on('connect', () => {
+        console.log('[Socket] Successfully connected with ID:', s.id);
+        s.emit('join_user_room', user._id);
+      });
+      
+      s.on('connect_error', (err) => {
+        console.error('[Socket] Connection error:', err.message);
+      });
+      
+      s.on('disconnect', (reason) => {
+        console.warn('[Socket] Disconnected. Reason:', reason);
+      });
+      
+      s.io.on('reconnect_attempt', (attempt) => {
+        console.log(`[Socket] Reconnection attempt ${attempt}...`);
+      });
+
       setSocket(s);
-      return () => s.disconnect();
+      
+      return () => {
+        console.log('[Socket] Cleaning up socket connection');
+        s.disconnect();
+      };
     }
   }, [token, user?._id]);
 

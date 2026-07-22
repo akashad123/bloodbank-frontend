@@ -23,6 +23,7 @@ import AdminRequests from './pages/AdminRequests';
 import AdminUsers from './pages/AdminUsers';
 import AdminUserManagement from './pages/AdminUserManagement';
 import AdminHospitals from './pages/AdminHospitals';
+import AdminContacts from './pages/AdminContacts';
 
 function AppRoutes() {
   return (
@@ -65,6 +66,7 @@ function AppRoutes() {
           <Route path="/admin/users"    element={<AdminUsers />} />
           <Route path="/admin/manage-users" element={<AdminUserManagement />} />
           <Route path="/admin/hospitals" element={<AdminHospitals />} />
+          <Route path="/admin/contacts" element={<AdminContacts />} />
         </Route>
       </Route>
 

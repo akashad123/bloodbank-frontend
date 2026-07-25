@@ -58,11 +58,11 @@ export default function Landing() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full">
-              <Link to="/register" className="btn-primary text-base px-8 py-3.5 sm:py-4 shadow-md w-full sm:w-auto text-center flex items-center justify-center min-h-[56px]">
-                Register as Donor
+              <Link to="/register" className="btn-48 btn-48-primary font-semibold text-base uppercase tracking-wider px-8 py-3.5 sm:py-4 shadow-md w-full sm:w-auto text-center flex items-center justify-center min-h-[56px]">
+                <span>Register as Donor</span>
               </Link>
-              <Link to="/register" className="btn-outline text-base px-8 py-3.5 sm:py-4 w-full sm:w-auto text-center flex items-center justify-center min-h-[56px]">
-                Request Blood
+              <Link to="/register" className="btn-48 btn-48-secondary font-semibold text-base uppercase tracking-wider px-8 py-3.5 sm:py-4 shadow-md w-full sm:w-auto text-center flex items-center justify-center min-h-[56px]">
+                <span>Request Blood</span>
               </Link>
             </div>
           </motion.div>
@@ -141,8 +141,8 @@ export default function Landing() {
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-black mb-2 sm:mb-3">Ready to save a life?</h2>
               <p className="text-primary-100 text-base sm:text-lg">Join thousands of donors across Kerala making an impact.</p>
             </div>
-            <Link to="/register" className="bg-white text-primary font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl shadow-lg hover:bg-gray-50 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex-shrink-0 text-center w-full md:w-auto flex items-center justify-center min-h-[56px]">
-              Get Started — It's Free
+            <Link to="/register" className="btn-48 btn-48-primary font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl shadow-lg transition-all duration-300 flex-shrink-0 text-center w-full md:w-auto flex items-center justify-center min-h-[56px]">
+              <span>Get Started — It's Free</span>
             </Link>
           </div>
         </section>
@@ -166,6 +166,56 @@ export default function Landing() {
           to { transform: translateX(-50%); }
         }
         .animate-marquee { animation: marquee 12s linear infinite; }
+
+        /* Button 48 Styles */
+        .btn-48 {
+          position: relative;
+          overflow: hidden;
+          z-index: 1;
+        }
+        .btn-48 span {
+          position: relative;
+          z-index: 2;
+          transition: color 0.3s ease;
+        }
+        .btn-48::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          transform: translateX(-100%);
+          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: 0;
+        }
+        .btn-48:hover::before {
+          transform: translateX(0);
+        }
+
+        .btn-48-primary {
+          background-color: #CD0000;
+          color: white;
+          border: none;
+        }
+        .btn-48-primary::before {
+          background-color: white;
+        }
+        .btn-48-primary:hover span {
+          color: #CD0000;
+        }
+
+        .btn-48-secondary {
+          background-color: white;
+          color: #CD0000;
+          border: 2px solid #CD0000;
+        }
+        .btn-48-secondary::before {
+          background-color: #CD0000;
+        }
+        .btn-48-secondary:hover span {
+          color: white;
+        }
       `}</style>
     </div>
   );

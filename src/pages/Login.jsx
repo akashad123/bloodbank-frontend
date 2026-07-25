@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -79,6 +79,32 @@ export default function Login() {
   const [phone, setPhone] = useState('');
   const [phoneError, setPhoneError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [lockoutTime, setLockoutTime] = useState(0);
+
+  useEffect(() => {
+    let timer;
+    if (lockoutTime > 0) {
+      timer = setInterval(() => {
+        setLockoutTime((prev) => {
+          if (prev <= 1) {
+            setPhoneError('');
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [lockoutTime]);
+
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    if (m > 0) {
+      return `${m} minute${m !== 1 ? 's' : ''} ${s} second${s !== 1 ? 's' : ''}`;
+    }
+    return `${s} second${s !== 1 ? 's' : ''}`;
+  };
 
   // Admin login state — hidden by default
   const [showAdminLogin, setShowAdminLogin] = useState(false);
@@ -108,6 +134,11 @@ export default function Login() {
       toast.success(`Logged in successfully as ${data.user.role === 'admin' ? 'ADMIN' : data.user.isQualifiedDonor ? 'DONOR' : 'REQUESTER'}`);
       navigate(data.user.role === 'admin' ? '/admin' : '/dashboard');
     } catch (err) {
+      if (err.response?.status === 429 && err.response?.data?.retryAfter) {
+        setLockoutTime(err.response.data.retryAfter);
+        setPhoneError('');
+        return;
+      }
       const msg = err.response?.data?.message || 'Sign in failed. Please try again.';
       toast.error(msg);
       if (err.response?.status === 404 || msg.toLowerCase().includes('not registered') || msg.toLowerCase().includes('not found')) {
@@ -137,6 +168,11 @@ export default function Login() {
       toast.success('Logged in successfully as ADMIN');
       navigate(data.user.role === 'admin' ? '/admin' : '/dashboard');
     } catch (err) {
+      if (err.response?.status === 429 && err.response?.data?.retryAfter) {
+        setLockoutTime(err.response.data.retryAfter);
+        toast.error(`Sign in paused. Try again in ${formatTime(err.response.data.retryAfter)}`);
+        return;
+      }
       toast.error(err.response?.data?.message || 'Invalid credentials');
     } finally {
       setAdminLoading(false);
@@ -220,11 +256,32 @@ export default function Login() {
                     maxLength={10}
                     autoComplete="tel"
                     inputMode="numeric"
+                    disabled={lockoutTime > 0}
                     autoFocus
                   />
                 </div>
                 <AnimatePresence>
-                  {phoneError && (
+                  {lockoutTime > 0 ? (
+                    <motion.div
+                      initial={{ opacity: 0, y: -8, height: 0 }}
+                      animate={{ opacity: 1, y: 0, height: 'auto' }}
+                      exit={{ opacity: 0, y: -8, height: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="flex items-start gap-2.5 bg-orange-50 border-l-4 border-orange-500 p-3 mt-2.5 select-none">
+                        <span className="text-orange-500 mt-0.5 text-sm shrink-0">🔒</span>
+                        <div className="flex-1">
+                          <p className="text-orange-600 text-[10px] font-black uppercase tracking-wider">
+                            Sign-In Paused
+                          </p>
+                          <p className="text-text-primary text-xs mt-0.5 font-semibold leading-relaxed">
+                            For your security, sign-in has been temporarily paused after several failed attempts. Please try again in {formatTime(lockoutTime)}.
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ) : phoneError ? (
                     <motion.div
                       initial={{ opacity: 0, y: -8, height: 0 }}
                       animate={{ opacity: 1, y: 0, height: 'auto' }}
@@ -244,7 +301,7 @@ export default function Login() {
                         </div>
                       </div>
                     </motion.div>
-                  )}
+                  ) : null}
                 </AnimatePresence>
               </div>
 
@@ -252,7 +309,7 @@ export default function Login() {
               <button
                 id="login-submit"
                 type="submit"
-                disabled={loading}
+                disabled={loading || lockoutTime > 0}
                 className="btn-primary w-full py-4 text-sm flex items-center justify-center gap-2 disabled:opacity-60"
               >
                 {loading ? (

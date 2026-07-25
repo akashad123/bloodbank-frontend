@@ -16,21 +16,21 @@ export const NotificationProvider = ({ children }) => {
 
   // ── Fetch unread notification count ───────────────────────────────────────
   const fetchUnreadCount = useCallback(async () => {
-    if (!user) return;
+    if (!user?._id) return;
     try {
       const { data } = await api.get('/notifications/unread-count');
       setUnreadCount(data.count);
     } catch { /* silent fail */ }
-  }, [user]);
+  }, [user?._id]);
 
   // ── Fetch unseen certificate count (donor only) ───────────────────────────
   const fetchUnseenCertCount = useCallback(async () => {
-    if (!user || !isDonor) return;
+    if (!user?._id || !isDonor) return;
     try {
       const { data } = await fetchUnseenCertificateCount();
       setUnreadCertificatesCount(data.count);
     } catch { /* silent fail */ }
-  }, [user, isDonor]);
+  }, [user?._id, isDonor]);
 
   // ── Clear the certificate badge (called when Certificates page mounts) ────
   const clearCertificateBadge = useCallback(() => {

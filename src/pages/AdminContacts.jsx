@@ -7,9 +7,9 @@ import toast from 'react-hot-toast';
 
 export default function AdminContacts() {
   const [contacts, setContacts] = useState([
-    { name: '', phone: '' },
-    { name: '', phone: '' },
-    { name: '', phone: '' }
+    { name: '', phone: '', email: '' },
+    { name: '', phone: '', email: '' },
+    { name: '', phone: '', email: '' }
   ]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -22,9 +22,9 @@ export default function AdminContacts() {
           // Ensure we always display exactly 3 contacts (pad with empty if needed)
           const fetchedContacts = data.contacts;
           const paddedContacts = [
-            fetchedContacts[0] || { name: '', phone: '' },
-            fetchedContacts[1] || { name: '', phone: '' },
-            fetchedContacts[2] || { name: '', phone: '' }
+            fetchedContacts[0] || { name: '', phone: '', email: '' },
+            fetchedContacts[1] || { name: '', phone: '', email: '' },
+            fetchedContacts[2] || { name: '', phone: '', email: '' }
           ];
           setContacts(paddedContacts);
         }
@@ -82,7 +82,7 @@ export default function AdminContacts() {
               <div key={index} className="bg-gray-50 p-5 border border-gray-200" style={{ borderRadius: '0' }}>
                 <h3 className="font-bold text-sm text-text-secondary mb-4 uppercase tracking-wider">Contact {index + 1}</h3>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-xs font-black uppercase tracking-wider text-text-muted mb-2">
                       Name
@@ -106,6 +106,19 @@ export default function AdminContacts() {
                       onChange={(e) => handleChange(index, 'phone', e.target.value)}
                       className="input-field w-full text-sm font-semibold"
                       placeholder="e.g., 9946709455"
+                      style={{ borderRadius: '0' }}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-black uppercase tracking-wider text-text-muted mb-2">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={contact.email || ''}
+                      onChange={(e) => handleChange(index, 'email', e.target.value)}
+                      className="input-field w-full text-sm font-semibold"
+                      placeholder="e.g., admin@example.com"
                       style={{ borderRadius: '0' }}
                     />
                   </div>

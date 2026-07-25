@@ -24,7 +24,9 @@ export const AuthProvider = ({ children }) => {
       }
 
       console.log('[Socket] Initializing connection to:', socketUrl);
-      const s = io(socketUrl);
+      const s = io(socketUrl, {
+        transports: ['websocket'],
+      });
       
       s.on('connect', () => {
         console.log('[Socket] Successfully connected with ID:', s.id);

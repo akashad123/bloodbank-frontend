@@ -32,15 +32,21 @@ export default function UserDashboard() {
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const [rRes, cRes, aRes] = await Promise.all([
-          api.get('/requests/my?limit=100'),
-          api.get('/certificates/count'),
-          api.get('/requests/assigned'),
-        ]);
-        setRequests(rRes.data.requests ?? []);
-        setRequestsTotal(rRes.data.total ?? 0);
-        setCertCount(cRes.data.count ?? 0);
-        setAssignedRequests(aRes.data.requests ?? []);
+        const promises = [api.get('/requests/my?limit=100')];
+        if (isDonor) {
+          promises.push(api.get('/certificates/count'));
+          promises.push(api.get('/requests/assigned'));
+        }
+
+        const results = await Promise.all(promises);
+        
+        setRequests(results[0].data.requests ?? []);
+        setRequestsTotal(results[0].data.total ?? 0);
+        
+        if (isDonor) {
+          setCertCount(results[1].data.count ?? 0);
+          setAssignedRequests(results[2].data.requests ?? []);
+        }
       } catch (err) {
         console.error('[Dashboard] fetch error:', err.response?.data || err.message);
       } finally {

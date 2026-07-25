@@ -107,6 +107,7 @@ export default function RequestDetail() {
 
   const isOwner = request.createdBy?._id === user?._id;
   const isAdmin = user?.role === 'admin';
+  const isAssignedDonor = request.assignedDonor?._id === user?._id || request.assignedDonor === user?._id;
 
   // Helper functions for status timeline
   const currentStepIdx = STEPS.indexOf(request.status);
@@ -440,6 +441,72 @@ export default function RequestDetail() {
                   )}
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* Requester Details Card */}
+          {(isAssignedDonor || isAdmin) && request.assignedDonor && (
+            <div className="bg-white border border-gray-150 p-6 shadow-sm relative overflow-hidden mb-6" style={{ borderRadius: '0' }}>
+              <h3 className="font-black text-lg mb-4 text-text-primary border-b border-gray-100 pb-2">Requester Details</h3>
+              <div className="space-y-2">
+                <p className="font-bold text-sm text-text-primary">
+                  <span className="text-text-secondary font-medium mr-2">Name:</span> 
+                  {request.contactName || request.createdBy?.name || 'Deleted User'}
+                </p>
+                {request.contactPhone && request.contactPhone !== 'Admin Mediated' && (
+                  <p className="font-bold text-sm text-text-primary flex items-center">
+                    <span className="text-text-secondary font-medium mr-2">Phone:</span>
+                    <a href={`tel:${request.contactPhone}`} className="text-primary hover:underline flex items-center gap-1.5">
+                      <Phone size={14} /> {request.contactPhone}
+                    </a>
+                  </p>
+                )}
+                {request.bloodGroup && (
+                  <p className="font-bold text-sm text-text-primary">
+                    <span className="text-text-secondary font-medium mr-2">Blood Group Needed:</span>
+                    {request.bloodGroup}
+                  </p>
+                )}
+                {request.hospital && (
+                  <p className="font-bold text-sm text-text-primary">
+                    <span className="text-text-secondary font-medium mr-2">Hospital:</span>
+                    {request.hospital}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Assigned Donor Details Card */}
+          {(isOwner || isAdmin) && (
+            <div className="bg-white border border-gray-150 p-6 shadow-sm relative overflow-hidden mb-6" style={{ borderRadius: '0' }}>
+              <h3 className="font-black text-lg mb-4 text-text-primary border-b border-gray-100 pb-2">Assigned Donor</h3>
+              {!request.assignedDonor ? (
+                <p className="text-sm text-text-secondary font-medium">
+                  Waiting for donor assignment.
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  <p className="font-bold text-sm text-text-primary">
+                    <span className="text-text-secondary font-medium mr-2">Name:</span> 
+                    {request.assignedDonor.name}
+                  </p>
+                  {request.assignedDonor.phone && (
+                    <p className="font-bold text-sm text-text-primary flex items-center">
+                      <span className="text-text-secondary font-medium mr-2">Phone:</span>
+                      <a href={`tel:${request.assignedDonor.phone}`} className="text-primary hover:underline flex items-center gap-1.5">
+                        <Phone size={14} /> {request.assignedDonor.phone}
+                      </a>
+                    </p>
+                  )}
+                  {request.assignedDonor.bloodGroup && (
+                    <p className="font-bold text-sm text-text-primary">
+                      <span className="text-text-secondary font-medium mr-2">Blood Group:</span>
+                      {request.assignedDonor.bloodGroup}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           )}
 

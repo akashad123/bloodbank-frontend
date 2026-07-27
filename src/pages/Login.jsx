@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Droplets, Phone, Mail, Lock, Eye, EyeOff,
@@ -73,6 +73,7 @@ const AnimatedDroplet = () => (
 // ─── Main Login Component ─────────────────────────────────────────────────────
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
 
   // Donor phone login state
@@ -106,6 +107,29 @@ export default function Login() {
     return `${s} second${s !== 1 ? 's' : ''}`;
   };
 
+  // Helper to validate internal redirect target to prevent open redirect vulnerabilities
+  const getValidRedirectTarget = (target) => {
+    if (!target) return null;
+    let path = typeof target === 'object' && target.pathname ? target.pathname + (target.search || '') + (target.hash || '') : String(target);
+    if (path.startsWith('/') && !path.startsWith('//') && path !== '/login' && path !== '/register') {
+      return path;
+    }
+    return null;
+  };
+
+  const handlePostLoginRedirect = (userRole) => {
+    const fromState = location.state?.from;
+    const fromSession = sessionStorage.getItem('redirect_after_login');
+    const redirectTarget = getValidRedirectTarget(fromState) || getValidRedirectTarget(fromSession);
+
+    if (redirectTarget) {
+      sessionStorage.removeItem('redirect_after_login');
+      navigate(redirectTarget, { replace: true });
+    } else {
+      navigate(userRole === 'admin' ? '/admin' : '/dashboard', { replace: true });
+    }
+  };
+
   // Admin login state — hidden by default
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [adminForm, setAdminForm] = useState({ email: '', password: '' });
@@ -132,7 +156,7 @@ export default function Login() {
       const { data } = await api.post('/auth/login', { phone: phone.trim() });
       login(data.user, data.token);
       toast.success(`Logged in successfully as ${data.user.role === 'admin' ? 'ADMIN' : data.user.isQualifiedDonor ? 'DONOR' : 'REQUESTER'}`);
-      navigate(data.user.role === 'admin' ? '/admin' : '/dashboard');
+      handlePostLoginRedirect(data.user.role);
     } catch (err) {
       if (err.response?.status === 429 && err.response?.data?.retryAfter) {
         setLockoutTime(err.response.data.retryAfter);
@@ -166,7 +190,7 @@ export default function Login() {
       });
       login(data.user, data.token);
       toast.success('Logged in successfully as ADMIN');
-      navigate(data.user.role === 'admin' ? '/admin' : '/dashboard');
+      handlePostLoginRedirect(data.user.role);
     } catch (err) {
       if (err.response?.status === 429 && err.response?.data?.retryAfter) {
         setLockoutTime(err.response.data.retryAfter);

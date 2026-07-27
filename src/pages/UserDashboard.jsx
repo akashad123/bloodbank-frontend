@@ -170,7 +170,133 @@ export default function UserDashboard() {
 
       <div className="max-w-7xl mx-auto px-6 pt-6 pb-8 space-y-6">
         
-     
+        {/* Waiting Period Banner */}
+        {isDonor && eligibility.status === 'Waiting Period Active' && (
+          <motion.div variants={fadeUp} className="mb-8">
+            <div className="bg-amber-50 border-2 border-amber-400 p-6 shadow-sm flex items-start gap-4">
+              <div className="w-12 h-12 bg-amber-100 flex items-center justify-center shrink-0">
+                <AlertTriangle size={24} className="text-amber-600" />
+              </div>
+              <div>
+                <h3 className="text-amber-800 font-black text-lg">WAITING PERIOD ACTIVE</h3>
+                <p className="text-amber-700 font-medium mt-1">
+                  You are currently in the post-donation waiting period. You will become eligible to donate again on <strong>{eligibility.nextEligibleDate}</strong>.
+                </p>
+                <p className="text-amber-800 font-bold mt-2">Days Remaining: {eligibility.daysRemaining}</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Recent Requests - All Users */}
+        <motion.div variants={fadeUp} initial="hidden" animate="show">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-black">Your Recent Requests</h2>
+            <Link to="/requests" className={`${colors.text} text-sm font-semibold hover:underline`}>View All →</Link>
+          </div>
+
+          {requests.length === 0 ? (
+            <div className="card text-center py-12 text-text-muted">
+              <Droplets size={40} className="mx-auto text-bg-darker mb-3" />
+              <p className="font-semibold">You haven't created any requests</p>
+              <p className="text-sm mt-1">Create a new blood request if needed</p>
+            </div>
+          ) : (
+            <div className="space-y-3 max-h-[260px] overflow-y-auto pr-2">
+              {requests.slice(0, 10).map((req) => (
+                <Link key={req._id} to={`/requests/${req._id}`} className={`card w-full overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-3 hover:${colors.border} transition-colors group shrink-0`}>
+                  <div className="flex items-start gap-3 flex-1 min-w-0 w-full">
+                    <BloodGroupBadge group={req.bloodGroup} size="md" />
+                    <div className="flex-1 min-w-0 flex flex-col gap-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="font-bold text-sm md:text-base break-words text-text-primary">{req.hospital}</p>
+                        <UrgencyBadge urgency={req.urgency} />
+                        <span className={`badge ${
+                          req.status === 'pending' ? 'badge-pending' :
+                          req.status === 'fulfilled' ? 'badge-fulfilled' : 'badge-approved'
+                        }`}>
+                          {req.status}
+                        </span>
+                      </div>
+                      <p className="text-xs text-text-secondary">📍 {req.district} &bull; {req.units} unit(s) &bull; {timeAgo(req.createdAt)}</p>
+                      
+                      {/* Donor Assignment Status Tracker */}
+                      {req.assignedDonor && (
+                        <div className="mt-2 text-xs font-semibold text-text-secondary bg-gray-50 p-2.5 border border-gray-150 inline-flex items-center gap-2 max-w-max">
+                          {req.status === 'assigned' && <span>🟢 Donor Assigned: <strong className="text-text-primary">{req.assignedDonor.name}</strong></span>}
+                          {req.status === 'accepted' && <span>🤝 Donor Ready: <strong className="text-text-primary">{req.assignedDonor.name}</strong> accepted and is coordinating.</span>}
+                          {req.status === 'completed' && <span>🏆 Donation Completed: Awaiting admin confirmation.</span>}
+                          {req.status === 'fulfilled' && <span>🎉 Request Fulfilled by <strong className="text-text-primary">{req.assignedDonor.name}</strong></span>}
+                        </div>
+                      )}
+                      {req.status === 'pending' && (
+                        <p className="text-[11px] font-medium text-amber-700 mt-1">⏳ Awaiting verification by {req.district} district admin</p>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </motion.div>
+
+        {/* Quick Stats */}
+        <motion.div
+          variants={{ show: { transition: { staggerChildren: 0.1 } } }}
+          initial="hidden"
+          animate="show"
+          className="grid grid-cols-2 md:grid-cols-4 gap-4"
+        >
+          {statsItems.map((stat, i) => (
+            <motion.div key={i} variants={fadeUp} className={`card flex flex-col justify-between ${stat.accent ? `${colors.accentBadge} border` : ''}`}>
+              <stat.icon size={20} className={stat.accent ? `${colors.text} mb-3` : 'text-text-muted mb-3'} />
+              <div>
+                <p className="text-2xl font-black text-text-primary tracking-tight">{stat.value}</p>
+                <p className="text-xs font-semibold text-text-secondary mt-1 uppercase tracking-wider">{stat.label}</p>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Quick Actions */}
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          animate="show"
+          className={`grid grid-cols-1 ${quickActions.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-2 lg:grid-cols-3'} gap-4`}
+        >
+          {quickActions.map((action, i) => {
+            const Icon = action.icon;
+            const linkClass = action.primary
+              ? "bg-primary text-white p-6 shadow-md hover:shadow-lg hover:bg-primary-dark hover:-translate-y-1 transition-all duration-300 flex items-center gap-4 group"
+              : "bg-white border border-gray-100 shadow-sm p-6 flex items-center gap-4 group transition-all duration-300 hover:bg-primary hover:text-white hover:border-primary hover:-translate-y-1 hover:shadow-md";
+            const iconBg = action.primary
+              ? "p-3 bg-white/20 group-hover:bg-white/30 transition-colors"
+              : "p-3 bg-primary-50 text-primary transition-colors duration-300 group-hover:bg-white/20";
+            const iconColor = action.primary
+              ? "text-white"
+              : "text-primary group-hover:text-white transition-colors duration-300";
+            const titleClass = action.primary
+              ? "font-bold text-base mb-1"
+              : "font-bold text-base text-text-primary group-hover:text-white transition-colors duration-300 mb-1";
+            const descClass = action.primary
+              ? "text-xs text-white/80"
+              : "text-xs text-text-secondary group-hover:text-white/80 transition-colors duration-300";
+
+            return (
+              <Link key={i} to={action.to} className={linkClass}>
+                <div className={iconBg}>
+                  <Icon size={24} className={iconColor} />
+                </div>
+                <div>
+                  <p className={titleClass}>{action.title}</p>
+                  <p className={descClass}>{action.desc}</p>
+                </div>
+              </Link>
+            );
+          })}
+        </motion.div>
+
         {/* Assigned Blood Donations - Donor Only */}
         {isDonor && assignedRequests.length > 0 && (
           <motion.div variants={fadeUp} initial="hidden" animate="show" className="space-y-4">
@@ -277,133 +403,6 @@ export default function UserDashboard() {
             </div>
           </motion.div>
         )}
-
-        {isDonor && eligibility.status === 'Waiting Period Active' && (
-          <motion.div variants={fadeUp} className="mb-8">
-            <div className="bg-amber-50 border-2 border-amber-400 p-6 shadow-sm flex items-start gap-4">
-              <div className="w-12 h-12 bg-amber-100 flex items-center justify-center shrink-0">
-                <AlertTriangle size={24} className="text-amber-600" />
-              </div>
-              <div>
-                <h3 className="text-amber-800 font-black text-lg">WAITING PERIOD ACTIVE</h3>
-                <p className="text-amber-700 font-medium mt-1">
-                  You are currently in the post-donation waiting period. You will become eligible to donate again on <strong>{eligibility.nextEligibleDate}</strong>.
-                </p>
-                <p className="text-amber-800 font-bold mt-2">Days Remaining: {eligibility.daysRemaining}</p>
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Quick Stats */}
-        <motion.div
-          variants={{ show: { transition: { staggerChildren: 0.1 } } }}
-          initial="hidden"
-          animate="show"
-          className="grid grid-cols-2 md:grid-cols-4 gap-4"
-        >
-          {statsItems.map((stat, i) => (
-            <motion.div key={i} variants={fadeUp} className={`card flex flex-col justify-between ${stat.accent ? `${colors.accentBadge} border` : ''}`}>
-              <stat.icon size={20} className={stat.accent ? `${colors.text} mb-3` : 'text-text-muted mb-3'} />
-              <div>
-                <p className="text-2xl font-black text-text-primary tracking-tight">{stat.value}</p>
-                <p className="text-xs font-semibold text-text-secondary mt-1 uppercase tracking-wider">{stat.label}</p>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Quick Actions */}
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          animate="show"
-          className={`grid grid-cols-1 ${quickActions.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-2 lg:grid-cols-3'} gap-4`}
-        >
-          {quickActions.map((action, i) => {
-            const Icon = action.icon;
-            const linkClass = action.primary
-              ? "bg-primary text-white p-6 shadow-md hover:shadow-lg hover:bg-primary-dark hover:-translate-y-1 transition-all duration-300 flex items-center gap-4 group"
-              : "bg-white border border-gray-100 shadow-sm p-6 flex items-center gap-4 group transition-all duration-300 hover:bg-primary hover:text-white hover:border-primary hover:-translate-y-1 hover:shadow-md";
-            const iconBg = action.primary
-              ? "p-3 bg-white/20 group-hover:bg-white/30 transition-colors"
-              : "p-3 bg-primary-50 text-primary transition-colors duration-300 group-hover:bg-white/20";
-            const iconColor = action.primary
-              ? "text-white"
-              : "text-primary group-hover:text-white transition-colors duration-300";
-            const titleClass = action.primary
-              ? "font-bold text-base mb-1"
-              : "font-bold text-base text-text-primary group-hover:text-white transition-colors duration-300 mb-1";
-            const descClass = action.primary
-              ? "text-xs text-white/80"
-              : "text-xs text-text-secondary group-hover:text-white/80 transition-colors duration-300";
-
-            return (
-              <Link key={i} to={action.to} className={linkClass}>
-                <div className={iconBg}>
-                  <Icon size={24} className={iconColor} />
-                </div>
-                <div>
-                  <p className={titleClass}>{action.title}</p>
-                  <p className={descClass}>{action.desc}</p>
-                </div>
-              </Link>
-            );
-          })}
-        </motion.div>
-
-        {/* Recent Requests - All Users */}
-
-          <motion.div variants={fadeUp} initial="hidden" animate="show">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-black">Your Recent Requests</h2>
-              <Link to="/requests" className={`${colors.text} text-sm font-semibold hover:underline`}>View All →</Link>
-            </div>
-
-            {requests.length === 0 ? (
-              <div className="card text-center py-12 text-text-muted">
-                <Droplets size={40} className="mx-auto text-bg-darker mb-3" />
-                <p className="font-semibold">You haven't created any requests</p>
-                <p className="text-sm mt-1">Create a new blood request if needed</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {requests.slice(0, 5).map((req) => (
-                  <Link key={req._id} to={`/requests/${req._id}`} className={`card w-full overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-3 hover:${colors.border} transition-colors group`}>
-                    <div className="flex items-start gap-3 flex-1 min-w-0 w-full">
-                      <BloodGroupBadge group={req.bloodGroup} size="md" />
-                      <div className="flex-1 min-w-0 flex flex-col gap-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <p className="font-bold text-sm md:text-base break-words text-text-primary">{req.hospital}</p>
-                          <UrgencyBadge urgency={req.urgency} />
-                          <span className={`badge ${
-                            req.status === 'pending' ? 'badge-pending' :
-                            req.status === 'fulfilled' ? 'badge-fulfilled' : 'badge-approved'
-                          }`}>
-                            {req.status}
-                          </span>
-                        </div>
-                        <p className="text-xs text-text-secondary">📍 {req.district} &bull; {req.units} unit(s) &bull; {timeAgo(req.createdAt)}</p>
-                        
-                        {/* Donor Assignment Status Tracker */}
-                        {req.assignedDonor && (
-                          <div className="mt-2 text-xs font-semibold text-text-secondary bg-gray-50 p-2.5 border border-gray-150 inline-flex items-center gap-2 max-w-max">
-                            {req.status === 'assigned' && <span>🟢 Donor Assigned: <strong className="text-text-primary">{req.assignedDonor.name}</strong></span>}
-                            {req.status === 'accepted' && <span>🤝 Donor Ready: <strong className="text-text-primary">{req.assignedDonor.name}</strong> accepted and is coordinating.</span>}
-                            {req.status === 'completed' && <span>🏆 Donation Completed: Awaiting admin confirmation.</span>}
-                            {req.status === 'fulfilled' && <span>🎉 Request Fulfilled by <strong className="text-text-primary">{req.assignedDonor.name}</strong></span>}
-                          </div>
-                        )}
-                        {req.status === 'pending' && (
-                          <p className="text-[11px] font-medium text-amber-700 mt-1">⏳ Awaiting verification by {req.district} district admin</p>
-                        )}
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </motion.div>
       </div>
     </div>
   );

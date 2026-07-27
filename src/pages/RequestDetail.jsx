@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Phone, Trash2, Edit, UserPlus, Check, Award, AlertTriangle, ArrowRight, X } from 'lucide-react';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
+import { Phone, Trash2, Edit, UserPlus, Check, Award, AlertTriangle, ArrowRight, X, ShieldAlert } from 'lucide-react';
 import { BloodGroupBadge, StatusBadge, UrgencyBadge, LoadingSpinner, PageHeader } from '../components/UI';
 import AssignDonorModal from '../components/AssignDonorModal';
 import { useAuth } from '../contexts/AuthContext';
@@ -13,20 +13,51 @@ const STEPS = ['pending', 'assigned', 'accepted', 'completed', 'fulfilled'];
 export default function RequestDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const location = useLocation();
+  const { user, loading: authLoading } = useAuth();
   const [request, setRequest] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [errorState, setErrorState] = useState(null); // null | 'forbidden' | 'not_found' | 'error'
+  const [errorMessage, setErrorMessage] = useState('');
   const [actionLoading, setActionLoading] = useState(null);
   const [assignModal, setAssignModal] = useState(null);
   const [cancelModal, setCancelModal] = useState({ isOpen: false, reason: '' });
   const [officialContacts, setOfficialContacts] = useState([]);
 
   const fetchRequestDetail = async () => {
+    setLoading(true);
+    setErrorState(null);
     try {
       const { data } = await api.get(`/requests/${id}`);
       setRequest(data.request);
-    } catch {
-      toast.error('Request not found');
+    } catch (err) {
+      const status = err.response?.status;
+      const msg = err.response?.data?.message;
+
+      if (status === 401) {
+        // Unauthenticated -> redirect to login with target preserved
+        const fullPath = location.pathname + location.search + location.hash;
+        if (!sessionStorage.getItem('redirect_after_login')) {
+          sessionStorage.setItem('redirect_after_login', fullPath);
+        }
+        navigate('/login', { state: { from: fullPath }, replace: true });
+        return;
+      }
+
+      if (status === 403) {
+        setErrorState('forbidden');
+        setErrorMessage(msg || 'Access Denied: You are not authorized to view this request.');
+        return;
+      }
+
+      if (status === 404) {
+        setErrorState('not_found');
+        setErrorMessage(msg || 'Request not found');
+        return;
+      }
+
+      setErrorState('error');
+      setErrorMessage(msg || 'Failed to load request details.');
     } finally {
       setLoading(false);
     }
@@ -42,9 +73,11 @@ export default function RequestDetail() {
   };
 
   useEffect(() => {
-    fetchRequestDetail();
-    fetchContacts();
-  }, [id]);
+    if (!authLoading) {
+      fetchRequestDetail();
+      fetchContacts();
+    }
+  }, [id, authLoading]);
 
   const handleDelete = async () => {
     if (!confirm('Delete this request?')) return;
@@ -102,8 +135,43 @@ export default function RequestDetail() {
     }
   };
 
-  if (loading) return <LoadingSpinner message="Loading request details..." />;
-  if (!request) return <div className="p-8 text-center text-text-muted">Request not found</div>;
+  if (loading || authLoading) return <LoadingSpinner message="Loading request details..." />;
+
+  if (errorState === 'forbidden') {
+    return (
+      <div className="min-h-screen bg-gray-50/50 flex items-center justify-center p-6">
+        <div className="bg-white border-2 border-red-500 p-8 max-w-md w-full text-center shadow-lg" style={{ borderRadius: 0 }}>
+          <div className="w-12 h-12 bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-4 font-black">
+            <ShieldAlert size={28} />
+          </div>
+          <h2 className="text-xl font-black text-text-primary mb-2">Access Denied</h2>
+          <p className="text-sm text-text-secondary mb-6 leading-relaxed">{errorMessage}</p>
+          <Link to="/dashboard" className="btn-primary inline-block px-6 py-2.5 text-xs uppercase tracking-wider font-bold">
+            Return to Dashboard
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (errorState === 'not_found' || !request) {
+    return (
+      <div className="min-h-screen bg-gray-50/50 flex items-center justify-center p-6">
+        <div className="bg-white border border-gray-200 p-8 max-w-md w-full text-center shadow-sm" style={{ borderRadius: 0 }}>
+          <div className="w-12 h-12 bg-gray-100 text-gray-500 flex items-center justify-center mx-auto mb-4 font-black">
+            ❓
+          </div>
+          <h2 className="text-xl font-black text-text-primary mb-2">Request Not Found</h2>
+          <p className="text-sm text-text-secondary mb-6 leading-relaxed">
+            {errorMessage || "The requested blood request does not exist or has been removed."}
+          </p>
+          <Link to="/dashboard" className="btn-primary inline-block px-6 py-2.5 text-xs uppercase tracking-wider font-bold">
+            Return to Dashboard
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const isOwner = request.createdBy?._id === user?._id;
   const isAdmin = user?.role === 'admin';

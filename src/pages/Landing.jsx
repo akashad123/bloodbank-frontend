@@ -199,10 +199,7 @@ export default function Landing() {
           border: none;
         }
         .btn-48-primary::before {
-          background-color: white;
-        }
-        .btn-48-primary:hover span {
-          color: #CD0000;
+          background-color: #990000;
         }
 
         .btn-48-secondary {

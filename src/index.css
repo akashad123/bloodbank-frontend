@@ -160,7 +160,7 @@
 
 /* Chat message styling */
 .chat-bubble-user {
-  @apply bg-primary text-white px-5 py-3 max-w-xs ml-auto text-sm shadow-sm;
+  @apply bg-white text-[#CD0000] border border-[#CD0000] px-5 py-3 max-w-xs ml-auto text-sm shadow-sm;
 }
 
 .chat-bubble-bot {

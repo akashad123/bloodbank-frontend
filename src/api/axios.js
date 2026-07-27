@@ -31,7 +31,14 @@ api.interceptors.response.use(
   (res) => res,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.clear();
+      const currentPath = window.location.pathname + window.location.search + window.location.hash;
+      if (currentPath && currentPath !== '/' && !currentPath.startsWith('/login') && !currentPath.startsWith('/register')) {
+        if (!sessionStorage.getItem('redirect_after_login')) {
+          sessionStorage.setItem('redirect_after_login', currentPath);
+        }
+      }
+      localStorage.removeItem('bb_token');
+      localStorage.removeItem('bb_user');
       window.location.href = '/login';
     }
     console.error("API ERROR:", error.response || error.message);

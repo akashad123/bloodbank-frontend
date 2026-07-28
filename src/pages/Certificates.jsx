@@ -6,6 +6,8 @@ import { LoadingSpinner, EmptyState, PageHeader } from '../components/UI';
 import { formatDate } from '../utils/constants';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import coordinatorSignature from '../assets/signatures/coordinator-signature.png';
+import presidentSignature from '../assets/signatures/president-signature.png';
 
 export default function Certificates() {
   const [certificates, setCertificates] = useState([]);
@@ -209,8 +211,12 @@ export default function Certificates() {
                     <div className="mb-4">
                       <div className="grid grid-cols-2 gap-12 max-w-md mx-auto text-center mt-6">
                         <div>
-                          <div className="h-6 flex items-end justify-center">
-                            <span className="font-serif italic text-text-secondary text-[11px]">RedConnect</span>
+                          <div className="h-12 flex items-end justify-center mb-1">
+                            <img
+                              src={coordinatorSignature}
+                              alt="RedConnect Coordinator Signature"
+                              className="h-12 w-auto max-w-[140px] object-contain mx-auto"
+                            />
                           </div>
                           <div className="w-24 h-[1px] bg-text-muted/40 mx-auto my-1"></div>
                           <p className="text-[9px] font-bold text-text-secondary uppercase tracking-wider">
@@ -218,8 +224,12 @@ export default function Certificates() {
                           </p>
                         </div>
                         <div>
-                          <div className="h-6 flex items-end justify-center">
-                            <span className="font-serif italic text-text-secondary text-[11px]">DYFI Mokeri East</span>
+                          <div className="h-12 flex items-end justify-center mb-1">
+                            <img
+                              src={presidentSignature}
+                              alt="DYFI Committee President Signature"
+                              className="h-12 w-auto max-w-[140px] object-contain mx-auto"
+                            />
                           </div>
                           <div className="w-24 h-[1px] bg-text-muted/40 mx-auto my-1"></div>
                           <p className="text-[9px] font-bold text-text-secondary uppercase tracking-wider">
@@ -327,8 +337,12 @@ export default function Certificates() {
                 <div className="mb-2">
                   <div className="grid grid-cols-2 gap-12 max-w-md mx-auto text-center mt-6">
                     <div>
-                      <div className="h-6 flex items-end justify-center">
-                        <span className="font-serif italic text-text-secondary text-[11px]">RedConnect</span>
+                      <div className="h-12 flex items-end justify-center mb-1">
+                        <img
+                          src={coordinatorSignature}
+                          alt="RedConnect Coordinator Signature"
+                          className="h-12 w-auto max-w-[140px] object-contain mx-auto"
+                        />
                       </div>
                       <div className="w-24 h-[1px] bg-text-muted/40 mx-auto my-1"></div>
                       <p className="text-[9px] font-bold text-text-secondary uppercase tracking-wider">
@@ -336,8 +350,12 @@ export default function Certificates() {
                       </p>
                     </div>
                     <div>
-                      <div className="h-6 flex items-end justify-center">
-                        <span className="font-serif italic text-text-secondary text-[11px]">DYFI Mokeri East</span>
+                      <div className="h-12 flex items-end justify-center mb-1">
+                        <img
+                          src={presidentSignature}
+                          alt="DYFI Committee President Signature"
+                          className="h-12 w-auto max-w-[140px] object-contain mx-auto"
+                        />
                       </div>
                       <div className="w-24 h-[1px] bg-text-muted/40 mx-auto my-1"></div>
                       <p className="text-[9px] font-bold text-text-secondary uppercase tracking-wider">

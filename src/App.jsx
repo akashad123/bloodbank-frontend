@@ -4,6 +4,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { ProtectedRoute, AdminRoute, PublicRoute, DonorRoute } from './components/ProtectedRoute';
 import Layout from './components/Layout';
+import NetworkStatus from './components/NetworkStatus';
 
 // Pages
 import Landing from './pages/Landing';
@@ -81,6 +82,7 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <NotificationProvider>
+          <NetworkStatus />
           <AppRoutes />
           <Toaster
             position="top-right"

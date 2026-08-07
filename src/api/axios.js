@@ -41,7 +41,7 @@ api.interceptors.response.use(
       localStorage.removeItem('bb_user');
       window.location.href = '/login';
     }
-    console.error("API ERROR:", error.response || error.message);
+    console.error("API ERROR:", error.response?.status, error.message);
     return Promise.reject(error);
   }
 );

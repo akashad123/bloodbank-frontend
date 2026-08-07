@@ -27,7 +27,7 @@ export default function EditRequest() {
 
   // Fetch existing request data
   useEffect(() => {
-    console.log("Edit ID:", id);
+
     api.get(`/requests/${id}`)
       .then(({ data }) => {
         const r = data.request;

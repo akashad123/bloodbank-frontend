@@ -36,11 +36,20 @@ export default function Notifications() {
   const [loading, setLoading]                 = useState(true);
   const [dismissingAll, setDismissingAll]     = useState(false);
 
-  /* Fetch notifications on mount */
+  /* Fetch notifications on mount & auto-clear unread badge */
   const fetchNotifications = async () => {
     try {
       const { data } = await api.get('/notifications?limit=50');
-      setNotifications(data.notifications);
+      const list = data.notifications || [];
+      const hasUnread = list.some((n) => !n.isRead);
+
+      if (hasUnread) {
+        // Automatically mark all as read (clears sidebar & navbar badge count immediately)
+        markAllRead();
+        setNotifications(list.map((n) => ({ ...n, isRead: true })));
+      } else {
+        setNotifications(list);
+      }
     } catch { } finally { setLoading(false); }
   };
 
@@ -95,11 +104,11 @@ export default function Notifications() {
 
   /* ─── Header right‑side action buttons ──────────────────────────── */
   const headerActions = (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
       {unreadCount > 0 && (
         <button
           onClick={handleMarkAll}
-          className="flex items-center gap-1.5 text-xs font-bold px-3 py-2 border border-gray-200 bg-white hover:bg-gray-50 text-text-primary transition-colors"
+          className="flex items-center justify-center gap-1.5 text-xs font-bold px-3 py-2.5 min-h-[44px] sm:min-h-0 border border-gray-200 bg-white hover:bg-gray-50 text-text-primary transition-colors w-full sm:w-auto"
         >
           <CheckCheck size={13} />
           Mark All Read
@@ -109,7 +118,7 @@ export default function Notifications() {
         <button
           onClick={handleDismissAll}
           disabled={dismissingAll}
-          className="flex items-center gap-1.5 text-xs font-bold px-3 py-2 border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 transition-colors disabled:opacity-50"
+          className="flex items-center justify-center gap-1.5 text-xs font-bold px-3 py-2.5 min-h-[44px] sm:min-h-0 border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 transition-colors disabled:opacity-50 w-full sm:w-auto"
         >
           <Trash2 size={13} />
           Dismiss All
@@ -120,7 +129,7 @@ export default function Notifications() {
 
   /* ─── Render ─────────────────────────────────────────────────────── */
   return (
-    <div className="min-h-screen bg-gray-50/50">
+    <div className="min-h-screen bg-gray-50/50 w-full max-w-full overflow-x-hidden">
       <PageHeader
         eyebrow="Notifications"
         title="Alerts"
@@ -133,7 +142,7 @@ export default function Notifications() {
         right={headerActions}
       />
 
-      <div className="max-w-3xl px-4 sm:px-6 pt-6 pb-10">
+      <div className="max-w-3xl w-full mx-auto px-3.5 sm:px-6 pt-4 sm:pt-6 pb-10 box-border">
         {loading ? (
           <LoadingSpinner />
         ) : notifications.length === 0 ? (
@@ -150,7 +159,7 @@ export default function Notifications() {
             />
           </motion.div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-3 w-full">
             <AnimatePresence initial={false} mode="popLayout">
               {notifications.map((n) => {
                 const cfg = typeConfig[n.type] || typeConfig.system;
@@ -165,7 +174,7 @@ export default function Notifications() {
                     className={`
                       relative group bg-white border-l-4 ${cfg.color}
                       border-y border-r border-gray-100
-                      cursor-pointer select-none
+                      cursor-pointer select-none w-full max-w-full box-border
                       transition-shadow duration-200
                       ${n.isRead
                         ? 'opacity-60 shadow-none'
@@ -177,27 +186,27 @@ export default function Notifications() {
                     {/* ── Unread dot indicator ── */}
                     {!n.isRead && (
                       <span
-                        className="absolute top-4 left-[-6px] w-2.5 h-2.5 bg-primary border-2 border-white"
+                        className="absolute top-3.5 sm:top-4 left-[-6px] w-2.5 h-2.5 bg-primary border-2 border-white"
                         style={{ borderRadius: '50%' }}
                       />
                     )}
 
-                    <div className="flex items-start gap-3 p-4 sm:p-5 pr-12">
+                    <div className="flex items-start gap-2.5 sm:gap-3 p-3.5 sm:p-5 pr-10 sm:pr-12 w-full">
                       {/* Icon */}
-                      <span className="text-2xl flex-shrink-0 mt-0.5" role="img">
+                      <span className="text-xl sm:text-2xl flex-shrink-0 mt-0.5" role="img">
                         {cfg.icon}
                       </span>
 
                       {/* Text content */}
-                      <div className="flex-1 min-w-0">
-                        <p className={`font-bold text-sm leading-snug ${n.isRead ? 'text-text-secondary' : 'text-text-primary'}`}>
+                      <div className="flex-1 min-w-0 break-words">
+                        <p className={`font-bold text-xs sm:text-sm leading-snug ${n.isRead ? 'text-text-secondary' : 'text-text-primary'}`}>
                           {n.title}
                         </p>
-                        <p className="text-sm text-text-secondary mt-1 leading-relaxed">
+                        <p className="text-xs sm:text-sm text-text-secondary mt-1 leading-relaxed break-words">
                           {n.message}
                         </p>
-                        <p className="text-xs font-medium text-text-muted mt-2 flex items-center gap-1">
-                          <Bell size={10} className="opacity-60" />
+                        <p className="text-[11px] sm:text-xs font-medium text-text-muted mt-2 flex items-center gap-1">
+                          <Bell size={10} className="opacity-60 shrink-0" />
                           {timeAgo(n.createdAt)}
                         </p>
                       </div>
@@ -209,11 +218,11 @@ export default function Notifications() {
                       aria-label="Dismiss notification"
                       onClick={(e) => handleDismiss(e, n._id)}
                       className="
-                        absolute top-3 right-3
-                        w-7 h-7 flex items-center justify-center
+                        absolute top-2.5 sm:top-3 right-2.5 sm:right-3
+                        w-8 h-8 flex items-center justify-center
                         rounded-full
                         text-gray-400
-                        opacity-0 group-hover:opacity-100
+                        opacity-100 sm:opacity-0 sm:group-hover:opacity-100
                         hover:bg-red-50 hover:text-red-500
                         focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-red-300
                         transition-all duration-200
@@ -238,7 +247,7 @@ export default function Notifications() {
                 <button
                   onClick={handleDismissAll}
                   disabled={dismissingAll}
-                  className="text-xs text-text-muted hover:text-red-500 flex items-center gap-1.5 transition-colors duration-200 disabled:opacity-40"
+                  className="text-xs text-text-muted hover:text-red-500 flex items-center gap-1.5 transition-colors duration-200 disabled:opacity-40 min-h-[44px] sm:min-h-0 px-3"
                 >
                   <Trash2 size={11} />
                   Clear all notifications

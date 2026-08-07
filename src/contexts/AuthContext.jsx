@@ -23,13 +23,13 @@ export const AuthProvider = ({ children }) => {
         return;
       }
 
-      console.log('[Socket] Initializing connection to:', socketUrl);
+
       const s = io(socketUrl, {
         transports: ['websocket'],
       });
       
       s.on('connect', () => {
-        console.log('[Socket] Successfully connected with ID:', s.id);
+
         s.emit('join_user_room', user._id);
       });
       
@@ -38,17 +38,17 @@ export const AuthProvider = ({ children }) => {
       });
       
       s.on('disconnect', (reason) => {
-        console.warn('[Socket] Disconnected. Reason:', reason);
+
       });
       
       s.io.on('reconnect_attempt', (attempt) => {
-        console.log(`[Socket] Reconnection attempt ${attempt}...`);
+
       });
 
       setSocket(s);
       
       return () => {
-        console.log('[Socket] Cleaning up socket connection');
+
         s.disconnect();
       };
     }

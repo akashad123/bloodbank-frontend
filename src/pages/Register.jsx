@@ -105,8 +105,6 @@ const checkEligibility = (screening) => {
   if (!screening.ageConfirmed) reasons.push('You must be 18 years or older to donate blood.');
   if (!screening.weight || Number(screening.weight) < 50)
     reasons.push('Minimum weight requirement is 50kg for blood donation.');
-  if (screening.alcohol === 'Yes')
-    reasons.push('Alcohol in system may disqualify you temporarily.');
   return { passed: reasons.length === 0, reasons };
 };
 

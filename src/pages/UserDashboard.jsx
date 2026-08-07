@@ -131,7 +131,6 @@ export default function UserDashboard() {
           };
           return map[user?.donorStatus] || 'Pending';
         })(), icon: CheckCircle, accent: eligibility?.isEligible },
-        { label: 'Days Since', value: eligibility?.daysSinceDonation ?? '—', icon: Clock },
         { label: 'Certificates', value: certCount, icon: Award },
         { label: 'District', value: user?.district?.slice(0, 8) + (user?.district?.length > 8 ? '…' : '') || '—', icon: Users },
       ]
@@ -245,7 +244,7 @@ export default function UserDashboard() {
           variants={{ show: { transition: { staggerChildren: 0.1 } } }}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-2 md:grid-cols-4 gap-4"
+          className={`grid grid-cols-2 ${statsItems.length === 5 ? 'md:grid-cols-3 lg:grid-cols-5' : 'md:grid-cols-4'} gap-4`}
         >
           {statsItems.map((stat, i) => (
             <motion.div key={i} variants={fadeUp} className={`card flex flex-col justify-between ${stat.accent ? `${colors.accentBadge} border` : ''}`}>

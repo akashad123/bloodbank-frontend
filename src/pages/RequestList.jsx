@@ -26,7 +26,7 @@ export default function RequestList() {
       );
       const params = new URLSearchParams({ page, limit: 15, ...activeFilters });
       const { data } = await api.get(`/requests/my?${params}`);
-      console.log('[RequestList] API response:', data);
+
       setRequests(data.requests ?? []);
       setPages(data.pages ?? 1);
     } catch (err) {

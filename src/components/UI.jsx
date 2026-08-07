@@ -30,46 +30,46 @@ export const PageHeader = ({ eyebrow, title, subtitle, right, maxWidth = 'max-w-
   const eyebrowColor = isDonor ? 'text-primary' : 'text-slate-600';
 
   return (
-    <div className="page-header">
-      <div className={`${maxWidth} py-5 w-full flex items-center justify-between gap-4`}>
+    <div className="page-header w-full max-w-full overflow-x-hidden">
+      <div className={`${maxWidth} py-4 sm:py-5 w-full flex flex-col md:flex-row items-start md:items-center justify-between gap-3 sm:gap-4`}>
         {/* Left: text block */}
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 w-full md:w-auto flex-1">
           {eyebrow && (
             <p className={`text-[10px] font-black uppercase tracking-widest ${eyebrowColor} mb-1 leading-none`}>
               {eyebrow}
             </p>
           )}
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-black text-text-primary leading-tight truncate">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <h1 className="text-xl sm:text-2xl font-black text-text-primary leading-tight truncate">
               {title}
             </h1>
             {user && (
               isDonor ? (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-red-150 border border-red-300 text-red-800 text-[10px] font-black tracking-wider uppercase select-none">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-red-150 border border-red-300 text-red-800 text-[10px] font-black tracking-wider uppercase select-none shrink-0 whitespace-nowrap">
                   <span className="w-1.5 h-1.5 bg-red-600 rounded-full animate-pulse" />
                   Donor Account
                 </span>
               ) : isRequester ? (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-gray-100 border border-gray-300 text-gray-700 text-[10px] font-black tracking-wider uppercase select-none">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-gray-100 border border-gray-300 text-gray-700 text-[10px] font-black tracking-wider uppercase select-none shrink-0 whitespace-nowrap">
                   <span className="w-1.5 h-1.5 bg-gray-600 rounded-full" />
                   Requester Account
                 </span>
               ) : isAdmin ? (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-primary border border-primary-light text-white text-[10px] font-black tracking-wider uppercase select-none">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-primary border border-primary-light text-white text-[10px] font-black tracking-wider uppercase select-none shrink-0 whitespace-nowrap">
                   Admin Account
                 </span>
               ) : null
             )}
           </div>
           {subtitle && (
-            <p className="text-text-secondary text-xs font-medium mt-0.5 leading-snug">
+            <p className="text-text-secondary text-xs font-medium mt-1 leading-snug">
               {subtitle}
             </p>
           )}
         </div>
         {/* Right: action slot */}
         {right && (
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="w-full md:w-auto flex items-center gap-2 shrink-0 pt-1 md:pt-0">
             {right}
           </div>
         )}

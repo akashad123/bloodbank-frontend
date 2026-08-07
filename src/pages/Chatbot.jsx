@@ -38,7 +38,7 @@ export default function Chatbot() {
     setLoading(true);
 
     try {
-      console.log("Sending:", msg);
+
       const { data } = await api.post('/chatbot/message', {
         message: msg
       });

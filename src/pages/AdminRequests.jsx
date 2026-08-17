@@ -1,13 +1,14 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, UserPlus, X, Phone, Droplets } from 'lucide-react';
 import { BloodGroupBadge, UrgencyBadge, StatusBadge, LoadingSpinner, EmptyState } from '../components/UI';
-import AssignDonorModal from '../components/AssignDonorModal';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 import { timeAgo } from '../utils/constants';
+
+const AssignDonorModal = lazy(() => import('../components/AssignDonorModal'));
 
 const STATUS_TABS = ['all', 'pending', 'assigned', 'accepted', 'completed', 'fulfilled'];
 
@@ -56,13 +57,15 @@ export default function AdminRequests() {
   return (
     <div className="min-h-screen" style={{ background: '#F7F7F8' }}>
 
-      {/* Assign Donor Modal */}
+      {/* Assign Donor Modal (Lazy Loaded on Demand) */}
       {assignModal && (
-        <AssignDonorModal
-          request={assignModal}
-          onClose={() => setAssignModal(null)}
-          onAssigned={fetchRequests}
-        />
+        <Suspense fallback={<LoadingSpinner message="Loading donor matcher..." />}>
+          <AssignDonorModal
+            request={assignModal}
+            onClose={() => setAssignModal(null)}
+            onAssigned={fetchRequests}
+          />
+        </Suspense>
       )}
 
       {/* ── Admin Page Header ── */}
@@ -151,12 +154,14 @@ export default function AdminRequests() {
                         <StatusBadge status={req.status} />
                       </div>
                       <p className="text-xs" style={{ color: '#888888' }}>{req.district}</p>
-                      <p className="text-xs overflow-hidden text-ellipsis" style={{ color: '#AAAAAA' }}>
-                        {req.units} unit(s) of {req.bloodGroup} · Req by {req.createdBy?.name || req.contactName || 'Deleted User'} · {timeAgo(req.createdAt)}
+                      <p className="text-xs overflow-hidden text-ellipsis" style={{ color: '#888888' }}>
+                        {req.units} unit(s) of {req.bloodGroup} · Requester: <strong style={{ color: '#222222' }}>{req.createdBy?.name || req.contactName || 'Deleted User'}</strong> · {timeAgo(req.createdAt)}
                       </p>
-                      <p className="text-xs break-all" style={{ color: '#AAAAAA' }}>
-                        Contact: <strong style={{ color: '#444444' }}>{req.contactName}</strong> · {req.contactPhone}
-                      </p>
+                      {req.contactPhone && req.contactPhone !== 'Admin Mediated' && (
+                        <p className="text-xs" style={{ color: '#888888' }}>
+                          Contact: <strong style={{ color: '#333333' }}>{req.contactPhone}</strong>
+                        </p>
+                      )}
                       {req.additionalInfo && (
                         <p className="text-xs italic break-words" style={{ color: '#888888' }}>
                           "{req.additionalInfo}"

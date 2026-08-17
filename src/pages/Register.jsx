@@ -137,7 +137,7 @@ export default function Register() {
   const [phase, setPhase] = useState('basic');
 
   // Basic Details Form
-  const [basicForm, setBasicForm] = useState({ name: '', phone: '', district: '', bloodGroup: '' });
+  const [basicForm, setBasicForm] = useState({ name: '', phone: '', district: '', place: '', bloodGroup: '' });
   const [basicErrors, setBasicErrors] = useState({});
 
   // Eligibility screening form
@@ -164,6 +164,7 @@ export default function Register() {
     if (!basicForm.phone.trim()) errs.phone = 'Phone number is required';
     else if (!/^[6-9]\d{9}$/.test(basicForm.phone.trim())) errs.phone = 'Enter a valid 10-digit Indian mobile number';
     if (!basicForm.district) errs.district = 'Please select a district';
+    if (!basicForm.place.trim()) errs.place = 'Please enter your place / locality';
     if (!basicForm.bloodGroup) errs.bloodGroup = 'Please select your blood group';
     
     setBasicErrors(errs);
@@ -217,6 +218,7 @@ export default function Register() {
         phone: basicForm.phone.trim(),
         bloodGroup: basicForm.bloodGroup,
         district: basicForm.district,
+        place: basicForm.place.trim(),
         lastDonationDate: screening.neverDonated ? null : screening.lastDonationDate,
         donorEligibility: eligibilityPayload,
       };
@@ -315,6 +317,18 @@ export default function Register() {
                       {KERALA_DISTRICTS.map(d => <option key={d} value={d}>{d}</option>)}
                     </select>
                     {basicErrors.district && <p className="text-red-500 text-xs mt-1.5 font-medium">{basicErrors.district}</p>}
+                  </div>
+
+                  <div>
+                    <label className="label">Place / Locality</label>
+                    <input
+                      type="text"
+                      value={basicForm.place}
+                      onChange={(e) => { setBasicForm(p => ({ ...p, place: e.target.value })); if (basicErrors.place) setBasicErrors(p => ({ ...p, place: '' })); }}
+                      className={`input text-base py-4 ${basicErrors.place ? 'border-red-400' : ''}`}
+                      placeholder="e.g. Thalassery, Mokeri, Payyannur"
+                    />
+                    {basicErrors.place && <p className="text-red-500 text-xs mt-1.5 font-medium">{basicErrors.place}</p>}
                   </div>
 
                   <div>

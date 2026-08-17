@@ -88,8 +88,13 @@ export const AuthProvider = ({ children }) => {
   };
 
   const updateUser = (updatedUser) => {
-    setUser(updatedUser);
-    localStorage.setItem('bb_user', JSON.stringify(updatedUser));
+    setUser((prev) => {
+      const fresh = updatedUser ? { ...(prev || {}), ...updatedUser } : updatedUser;
+      if (fresh) {
+        localStorage.setItem('bb_user', JSON.stringify(fresh));
+      }
+      return fresh;
+    });
   };
 
   return (

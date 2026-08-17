@@ -15,7 +15,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
-    name: '', phone: '', bloodGroup: '', district: '',
+    name: '', phone: '', bloodGroup: '', district: '', place: '',
     lastDonationDate: '', whatsappEnabled: false,
   });
 
@@ -27,13 +27,14 @@ export default function Profile() {
           phone: user?.phone || '',
           bloodGroup: user?.bloodGroup || '',
           district: user?.district || '',
+          place: user?.place || '',
           lastDonationDate: user?.lastDonationDate ? user.lastDonationDate.split('T')[0] : '',
           whatsappEnabled: user?.whatsappEnabled || false,
         });
       } catch { } finally { setLoading(false); }
     };
     fetchData();
-  }, []);
+  }, [user]);
 
   const handleChange = (e) => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
@@ -74,7 +75,7 @@ export default function Profile() {
         title={user?.name ?? ''}
         subtitle={[
           user?.phone ? `+91 ${user.phone}` : user?.email,
-          user?.district,
+          user?.place ? `${user.place}, ${user.district || ''}` : user?.district,
           user?.bloodGroup,
         ].filter(Boolean).join('  ·  ')}
         maxWidth="max-w-3xl"
@@ -237,10 +238,24 @@ export default function Profile() {
             </div>
             <div>
               <label className="label">District</label>
-              <select name="district" value={form.district} onChange={handleChange} className="select">
+              <select name="district" value={form.district} onChange={handleChange} className="select" required>
                 {KERALA_DISTRICTS.map((d) => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
+          </div>
+
+          <div>
+            <label className="label">Place / Locality</label>
+            <input
+              type="text"
+              name="place"
+              value={form.place}
+              onChange={handleChange}
+              className="input"
+              placeholder="e.g. Thalassery, Mokeri, Payyannur"
+              required
+            />
+            <p className="text-xs text-text-muted mt-1.5">Your general locality within the district (used for emergency matching).</p>
           </div>
 
           {isDonor && (

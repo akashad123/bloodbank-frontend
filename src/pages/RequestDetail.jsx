@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { Phone, Trash2, Edit, UserPlus, Check, Award, AlertTriangle, ArrowRight, X, ShieldAlert } from 'lucide-react';
 import { BloodGroupBadge, StatusBadge, UrgencyBadge, LoadingSpinner, PageHeader } from '../components/UI';
-import AssignDonorModal from '../components/AssignDonorModal';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 import { formatDate, timeAgo } from '../utils/constants';
+
+const AssignDonorModal = lazy(() => import('../components/AssignDonorModal'));
 
 const STEPS = ['pending', 'assigned', 'accepted', 'completed', 'fulfilled'];
 
@@ -188,11 +189,13 @@ export default function RequestDetail() {
   return (
     <div className="min-h-screen bg-gray-50/50 pb-12">
       {assignModal && (
-        <AssignDonorModal
-          request={assignModal}
-          onClose={() => setAssignModal(null)}
-          onAssigned={fetchRequestDetail}
-        />
+        <Suspense fallback={<LoadingSpinner message="Loading donor matcher..." />}>
+          <AssignDonorModal
+            request={assignModal}
+            onClose={() => setAssignModal(null)}
+            onAssigned={fetchRequestDetail}
+          />
+        </Suspense>
       )}
 
       {cancelModal.isOpen && (
@@ -312,11 +315,23 @@ export default function RequestDetail() {
                 { label: 'Urgency', value: request.urgency.charAt(0).toUpperCase() + request.urgency.slice(1) },
                 { label: 'Status', value: request.status.charAt(0).toUpperCase() + request.status.slice(1) },
                 { label: 'Posted', value: timeAgo(request.createdAt) },
-                { label: 'By', value: request.createdBy?.name || request.contactName || 'Deleted User' },
+                { label: 'Requester', value: request.createdBy?.name || request.contactName || 'Deleted User' },
+                ...(request.contactPhone && request.contactPhone !== 'Admin Mediated' ? [{
+                  label: 'Contact Number',
+                  value: (
+                    <a
+                      href={`tel:${request.contactPhone}`}
+                      className="inline-flex items-center gap-1.5 text-primary hover:underline font-bold"
+                    >
+                      <Phone size={14} className="shrink-0" />
+                      <span>{request.contactPhone}</span>
+                    </a>
+                  ),
+                }] : []),
               ].map(({ label, value }) => (
                 <div key={label}>
                   <p className="text-xs font-bold uppercase tracking-widest text-primary mb-1">{label}</p>
-                  <p className="font-bold text-sm md:text-base text-text-primary">{value}</p>
+                  <div className="font-bold text-sm md:text-base text-text-primary">{value}</div>
                 </div>
               ))}
             </div>
@@ -512,35 +527,81 @@ export default function RequestDetail() {
             </div>
           )}
 
-          {/* Requester Details Card */}
-          {(isAssignedDonor || isAdmin) && request.assignedDonor && (
-            <div className="bg-white border border-gray-150 p-6 shadow-sm relative overflow-hidden mb-6" style={{ borderRadius: '0' }}>
-              <h3 className="font-black text-lg mb-4 text-text-primary border-b border-gray-100 pb-2">Requester Details</h3>
-              <div className="space-y-2">
-                <p className="font-bold text-sm text-text-primary">
-                  <span className="text-text-secondary font-medium mr-2">Name:</span> 
-                  {request.contactName || request.createdBy?.name || 'Deleted User'}
-                </p>
-                {request.contactPhone && request.contactPhone !== 'Admin Mediated' && (
-                  <p className="font-bold text-sm text-text-primary flex items-center">
-                    <span className="text-text-secondary font-medium mr-2">Phone:</span>
-                    <a href={`tel:${request.contactPhone}`} className="text-primary hover:underline flex items-center gap-1.5">
-                      <Phone size={14} /> {request.contactPhone}
+          {/* Requester Details Card — Visible to Authorized District Admin */}
+          {isAdmin && (
+            <div
+              className="bg-white border border-gray-200 p-6 shadow-sm relative overflow-hidden mb-6"
+              style={{
+                borderRadius: '0',
+                borderLeft: '4px solid #B03030',
+              }}
+            >
+              <div className="flex items-center justify-between border-b border-gray-100 pb-2.5 mb-4">
+                <h3 className="font-black text-lg text-text-primary">Requester Details</h3>
+                <span
+                  className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5"
+                  style={{
+                    background: 'rgba(176,48,48,0.1)',
+                    color: '#B03030',
+                    border: '1px solid rgba(176,48,48,0.2)',
+                    borderRadius: 0,
+                  }}
+                >
+                  Admin Only
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Requester Name</p>
+                  <p className="font-bold text-sm text-text-primary mt-0.5">
+                    {request.createdBy?.name || request.contactName || 'Deleted User'}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Contact Mobile Number</p>
+                  {request.contactPhone && request.contactPhone !== 'Admin Mediated' ? (
+                    <div className="mt-1 flex flex-wrap items-center gap-2">
+                      <a
+                        href={`tel:${request.contactPhone}`}
+                        className="inline-flex items-center gap-2 px-3 py-2 text-xs font-bold transition-colors"
+                        style={{
+                          background: '#B03030',
+                          color: '#FFFFFF',
+                          borderRadius: 0,
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = '#8B2626')}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = '#B03030')}
+                      >
+                        <Phone size={14} className="shrink-0" />
+                        <span>{request.contactPhone}</span>
+                      </a>
+                      <span className="text-[11px] text-text-muted">(Click to call)</span>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-text-muted mt-0.5 italic">Protected / Unavailable</p>
+                  )}
+                </div>
+
+                {request.createdBy?.phone && request.createdBy.phone !== request.contactPhone && (
+                  <div className="pt-2 border-t border-gray-100">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Registered Phone</p>
+                    <a
+                      href={`tel:${request.createdBy.phone}`}
+                      className="mt-0.5 inline-flex items-center gap-1.5 text-xs text-primary font-bold hover:underline"
+                    >
+                      <Phone size={12} className="shrink-0" />
+                      <span>{request.createdBy.phone}</span>
                     </a>
-                  </p>
+                  </div>
                 )}
-                {request.bloodGroup && (
-                  <p className="font-bold text-sm text-text-primary">
-                    <span className="text-text-secondary font-medium mr-2">Blood Group Needed:</span>
-                    {request.bloodGroup}
-                  </p>
-                )}
-                {request.hospital && (
-                  <p className="font-bold text-sm text-text-primary">
-                    <span className="text-text-secondary font-medium mr-2">Hospital:</span>
-                    {request.hospital}
-                  </p>
-                )}
+
+                <div className="pt-2 border-t border-gray-100 text-xs text-text-secondary space-y-1">
+                  <p><span className="font-semibold text-text-muted">Hospital:</span> {request.hospital}</p>
+                  <p><span className="font-semibold text-text-muted">District:</span> {request.district}</p>
+                  <p><span className="font-semibold text-text-muted">Blood Group:</span> {request.bloodGroup} ({request.units} unit{request.units !== 1 ? 's' : ''})</p>
+                </div>
               </div>
             </div>
           )}
